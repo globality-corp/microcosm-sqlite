@@ -8,7 +8,6 @@ from contextlib import contextmanager
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
 
-from microcosm_sqlite.context import SessionContext
 from microcosm_sqlite.errors import (
     DuplicateModelError,
     ModelIntegrityError,
@@ -141,7 +140,7 @@ class Store(metaclass=ABCMeta):
         Return the current session or raise an error.
 
         """
-        session = SessionContext.session
+        session = self.model_class.session
         if session is None:
             raise AttributeError("No session is available in SQLiteContext")
 

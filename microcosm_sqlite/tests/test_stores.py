@@ -14,7 +14,6 @@ from hamcrest import (
 )
 from microcosm.api import create_object_graph
 
-from microcosm_sqlite.context import SessionContext
 from microcosm_sqlite.errors import (
     DuplicateModelError,
     ModelIntegrityError,
@@ -33,8 +32,8 @@ class TestStore:
         self.tj = Person(id=2, first="Thomas", last="Jefferson")
         self.store = PersonStore()
 
-        self.context = SessionContext.make(self.graph)
-        self.context.recreate_all()
+        Person.recreate_all(self.graph)
+        self.context = Person.new_context(self.graph).open()
 
     def populate(self):
         self.store.create(self.tj)
@@ -43,7 +42,7 @@ class TestStore:
 
     def teardown(self):
         self.context.close()
-        self.graph.sqlite.dispose()
+        Person.dispose(self.graph)
 
     def test_count(self):
         assert_that(self.store.count(), is_(equal_to(0)))

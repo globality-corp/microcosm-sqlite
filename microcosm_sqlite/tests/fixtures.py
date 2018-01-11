@@ -4,16 +4,23 @@ Test fixture.
 """
 from sqlalchemy import Column, Index, Integer, String
 
-from microcosm_sqlite.models import Model
-from microcosm_sqlite.stores import Store
+from microcosm_sqlite import DataSet, Store
+from microcosm_sqlite.models import IdentityMixin
 
 
-class Person(Model):
+Base = DataSet.create("example")
+
+
+class Person(IdentityMixin, Base):
     __tablename__ = "person"
 
     id = Column(Integer, primary_key=True)
     first = Column(String, nullable=False)
     last = Column(String, nullable=False)
+
+    @property
+    def identity(self):
+        return self.id
 
     __table_args__ = (
         Index(

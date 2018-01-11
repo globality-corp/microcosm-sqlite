@@ -1,22 +1,20 @@
 """
-Model base classes and mixins.
+Model mixins.
 
 """
-from sqlalchemy.ext.declarative import declarative_base
 
 
-Base = declarative_base(name="sqlite")
-
-
-class Model(Base):
+class IdentityMixin():
     """
-    Abstract model with basic equality functions.
+    Mixing for identity-based equality.
 
     This form of equality isn't always appropriate, but it's a good place to start,
     especially for writing test assertions.
 
     """
-    __abstract__ = True
+    @property
+    def identity(self):
+        raise NotImplementedError("identity")
 
     def _members(self):
         """
@@ -36,4 +34,4 @@ class Model(Base):
         return not self.__eq__(other)
 
     def __hash__(self):
-        return id(self) if self.uri is None else hash(self.uri)
+        return id(self) if self.identity is None else hash(self.identity)

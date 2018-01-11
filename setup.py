@@ -26,8 +26,7 @@ setup(
     ],
     entry_points={
         "microcosm.factories": [
-            "sqlite = microcosm_sqlite.factories:configure_sqlite_engine",
-            "sqlite_sessionmaker = microcosm_sqlite.factories:configure_sqlite_sessionmaker",
+            "sqlite = microcosm_sqlite.factories:SQLiteBindFactory",
         ],
     },
     tests_require=[

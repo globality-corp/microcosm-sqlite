@@ -2,47 +2,40 @@
 Session context.
 
 """
-from microcosm_sqlite.operations import new_session, recreate_all
 
 
 class SessionContext:
-    session = None
+    """
+    A context manager for a shared session between subclasses of a DataSet.
 
-    def __init__(self, graph, expire_on_commit=False):
+    """
+    def __init__(self, graph, data_set, expire_on_commit=False):
         self.graph = graph
+        self.data_set = data_set
         self.expire_on_commit = expire_on_commit
 
     def open(self):
-        SessionContext.session = new_session(self.graph, self.expire_on_commit)
+        self.data_set.session = self.data_set.new_session(
+            self.graph,
+            expire_on_commit=self.expire_on_commit,
+        )
         return self
 
     def close(self):
-        if SessionContext.session:
-            SessionContext.session.close()
-            SessionContext.session = None
+        session = self.data_set.session
+        if session:
+            session.close()
+            self.data_set.session = None
 
     def commit(self):
-        if SessionContext.session:
-            SessionContext.session.commit()
+        session = self.data_set.session
+        if session:
+            session.commit()
 
     def rollback(self):
-        if SessionContext.session:
-            SessionContext.session.rollback()
-
-    def recreate_all(self):
-        """
-        Recreate all database tables, but only in a testing context.
-        """
-        if self.graph.metadata.testing:
-            recreate_all(self.graph)
-
-    @classmethod
-    def make(cls, graph, expire_on_commit=False):
-        """
-        Create an opened context.
-
-        """
-        return cls(graph, expire_on_commit).open()
+        session = self.data_set.session
+        if session:
+            session.rollback()
 
     # context manager
 
