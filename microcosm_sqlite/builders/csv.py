@@ -3,6 +3,7 @@ CSV-based building.
 
 """
 from csv import DictReader
+from distutils.util import strtobool
 
 
 class CSVBuilder:
@@ -39,6 +40,8 @@ class CSVBuilder:
         column_type = column.type
         python_type = column_type.python_type
         try:
+            if python_type is bool:
+                return key, strtobool(value)
             return key, python_type(value)
         except ValueError:
             if column.nullable:
