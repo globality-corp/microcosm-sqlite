@@ -14,6 +14,10 @@ class SessionContext:
         self.data_set = data_set
         self.expire_on_commit = expire_on_commit
 
+    @property
+    def session(self):
+        return self.data_set.session
+
     def open(self):
         self.data_set.session = self.data_set.new_session(
             self.graph,
@@ -22,18 +26,18 @@ class SessionContext:
         return self
 
     def close(self):
-        session = self.data_set.session
+        session = self.session
         if session:
             session.close()
             self.data_set.session = None
 
     def commit(self):
-        session = self.data_set.session
+        session = self.session
         if session:
             session.commit()
 
     def rollback(self):
-        session = self.data_set.session
+        session = self.session
         if session:
             session.rollback()
 
