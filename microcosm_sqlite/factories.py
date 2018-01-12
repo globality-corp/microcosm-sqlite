@@ -48,7 +48,6 @@ class SQLiteBindFactory:
         """
         if name not in self.datasets:
             path = self.paths.get(name, self.default_path)
-            print(path)
             engine = create_engine(f"sqlite:///{path}", echo=self.echo)
             Session = sessionmaker(bind=engine)
 
