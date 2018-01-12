@@ -34,9 +34,8 @@ class TestSQLiteBindFactory:
         self.tmp_file.close()
 
     def test_config(self):
-        # no engines/session makers initially
-        assert_that(self.graph.sqlite.engines, is_(empty()))
-        assert_that(self.graph.sqlite.sessionmakers, is_(empty()))
+        # no datasets initially
+        assert_that(self.graph.sqlite.datasets, is_(empty()))
         # path configuration includes explicit config (and entry point config)
         assert_that(self.graph.sqlite.paths, is_(equal_to(dict(
             foo=self.tmp_file.name,

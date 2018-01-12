@@ -24,7 +24,7 @@ class SQLiteBindFactory:
         self.default_echo = strtobool(graph.config.sqlite.echo)
         self.default_path = graph.config.sqlite.path
 
-        self.data_sets = dict()
+        self.datasets = dict()
         self.paths = {
             entry_point.name: entry_point.load()()
             for entry_point in iter_entry_points("microcosm.sqlite")
@@ -44,7 +44,7 @@ class SQLiteBindFactory:
         Instances are cached on create and instantiated using configured paths.
 
         """
-        if name not in self.data_sets:
+        if name not in self.datasets:
             path = self.paths.get(name, self.default_path)
 
             engine = create_engine(f"sqlite:///{path}", echo=self.default_echo)
@@ -55,6 +55,6 @@ class SQLiteBindFactory:
             connection.execute("PRAGMA foreign_keys=ON")
             connection.close()
 
-            self.data_sets[name] = engine, Session
+            self.datasets[name] = engine, Session
 
-        return self.data_sets[name]
+        return self.datasets[name]
