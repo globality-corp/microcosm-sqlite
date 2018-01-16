@@ -14,6 +14,7 @@ class Truthy(TypeDecorator):
 
     """
     impl = Boolean
+    python_type = bool
 
     def process_bind_param(self, value, dialect):
         if isinstance(value, bool):
