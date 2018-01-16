@@ -27,6 +27,8 @@ def test_truthy():
         (False, False),
         ("True", True),
         ("true", True),
+        ("False", False),
+        ("false", False),
         ("Yes", True),
         ("yes", True),
         ("No", False),

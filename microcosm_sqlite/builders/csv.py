@@ -36,11 +36,6 @@ class CSVBuilder:
 
     def as_tuple(self, name, value):
         key, column = self.columns[name]
-        column_type = column.type
-        python_type = column_type.python_type
-        try:
-            return key, python_type(value)
-        except ValueError:
-            if column.nullable:
-                return key, None
-            raise
+        if not value and column.nullable:
+            return key, None
+        return key, value
