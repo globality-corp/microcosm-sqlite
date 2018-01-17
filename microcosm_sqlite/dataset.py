@@ -20,7 +20,7 @@ class DataSet:
 
     """
     @staticmethod
-    def create(name):
+    def create(name, cls=None, **kwargs):
         """
         Create a new declarative base class.
 
@@ -29,7 +29,7 @@ class DataSet:
         used to identity the correct engine and sessionmaker in the BindFactory.
 
         """
-        return declarative_base(name=name, cls=DataSet)
+        return declarative_base(name=name, cls=DataSet, **kwargs)
 
     @classmethod
     def resolve(cls):
