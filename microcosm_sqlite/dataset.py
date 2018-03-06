@@ -9,9 +9,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from microcosm_sqlite.context import SessionContext
 
 
-SESSION = "__session__"
-
-
 class DataSet:
     """
     A base class for a declarative base, representing a set of related types.
@@ -42,22 +39,6 @@ class DataSet:
                 return base
 
         raise Exception(f"Not a valid DataSet: {cls}")
-
-    @property
-    def session(self):
-        """
-        Get the current session attached to this data set (if any)
-
-        """
-        return getattr(self.__class__.resolve(), SESSION, None)
-
-    @session.setter
-    def session(self, session):
-        """
-        Set the session attached to this data set.
-
-        """
-        setattr(self.__class__.resolve(), SESSION, session)
 
     @classmethod
     def create_all(cls, graph):
