@@ -16,11 +16,49 @@ from microcosm_sqlite.errors import (
 )
 
 
+def get_session(store):
+    """
+    Return the current session or raise an error.
+
+    """
+    data_set = store.model_class.resolve()
+    session = data_set.session
+    if session is None:
+        raise AttributeError("No session is available in SQLiteContext")
+
+    return session
+
+
+class GetOrCreateSession:
+
+    def __init__(self, graph, expire_on_commit=False):
+        self.graph = graph
+        self.expire_on_commit = expire_on_commit
+
+    def __call__(self, store):
+        """
+        Return the current session or create a new one.
+
+        """
+        data_set = store.model_class.resolve()
+        session = data_set.session
+        if session is None:
+            session = data_set.new_session(
+                graph=self.graph,
+                expire_on_commit=self.expire_on_commit,
+            )
+
+        return session
+
+
 class Store(metaclass=ABCMeta):
     """
     A persistence layer for SQLite-backed models.
 
     """
+    def __init__(self, get_session=get_session):
+        self.get_session = get_session
+
     @property
     @abstractmethod
     def model_class(self):
@@ -136,15 +174,7 @@ class Store(metaclass=ABCMeta):
 
     @property
     def session(self):
-        """
-        Return the current session or raise an error.
-
-        """
-        session = self.model_class.session
-        if session is None:
-            raise AttributeError("No session is available in SQLiteContext")
-
-        return session
+        return self.get_session(self)
 
     @contextmanager
     def flushing(self):
