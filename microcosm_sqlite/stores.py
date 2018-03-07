@@ -4,6 +4,7 @@ Persistence abstractions.
 """
 from abc import ABCMeta, abstractmethod
 from contextlib import contextmanager
+from threading import local
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
@@ -41,16 +42,33 @@ class GetOrCreateSession:
 
         """
         data_set = store.model_class.resolve()
+
+        # support context access
         try:
             session = data_set.session
         except AttributeError:
             session = None
 
+        if session is not None:
+            return session
+
+        # support thread local access
+        try:
+            thread_local = data_set.local
+        except AttributeError:
+            thread_local = data_set.local = local()
+
+        try:
+            session = thread_local.session
+        except AttributeError:
+            pass
+
         if session is None:
-            session = data_set.session = data_set.new_session(
+            session = data_set.new_session(
                 graph=self.graph,
                 expire_on_commit=self.expire_on_commit,
             )
+            thread_local.session = session
 
         return session
 
