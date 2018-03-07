@@ -41,9 +41,13 @@ class GetOrCreateSession:
 
         """
         data_set = store.model_class.resolve()
-        session = data_set.session
+        try:
+            session = data_set.session
+        except AttributeError:
+            session = None
+
         if session is None:
-            session = data_set.new_session(
+            session = data_set.session = data_set.new_session(
                 graph=self.graph,
                 expire_on_commit=self.expire_on_commit,
             )
