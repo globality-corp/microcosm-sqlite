@@ -38,6 +38,7 @@ def test_truthy():
         (0, False),
         ("", False),
         ("0", False),
+        (None, None),
     ]
 
     graph = create_object_graph("example")
