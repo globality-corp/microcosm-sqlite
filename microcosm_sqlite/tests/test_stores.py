@@ -57,6 +57,15 @@ class TestStore:
             raises(ModelIntegrityError),
         )
 
+    def test_create_after_intergrity_error(self):
+        assert_that(
+            calling(self.store.create).with_args(Person(id=3, first=None, last=None)),
+            raises(ModelIntegrityError),
+        )
+
+        # no exception is raised
+        self.store.create(Person(id=3, first="First", last="Last"))
+
     def test_create_duplicate_error(self):
         self.store.create(Person(id=3, first="First", last="Last"))
         self.context.commit()
