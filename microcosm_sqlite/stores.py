@@ -208,6 +208,8 @@ class Store(metaclass=ABCMeta):
             yield
             self.session.flush()
         except IntegrityError as error:
+            self.session.rollback()
+
             if "UNIQUE constraint failed" in str(error):
                 raise DuplicateModelError(error)
             raise ModelIntegrityError(error)
