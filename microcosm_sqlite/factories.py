@@ -6,8 +6,16 @@ from distutils.util import strtobool
 from pkg_resources import iter_entry_points
 
 from microcosm.api import defaults
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
+
+
+def on_connect_listener(use_foreign_keys):
+    def enforce_foreign_keys(connection, _):
+        if use_foreign_keys:
+            connection.execute("PRAGMA foreign_keys=ON")
+
+    return enforce_foreign_keys
 
 
 @defaults(
@@ -49,13 +57,9 @@ class SQLiteBindFactory:
         if name not in self.datasets:
             path = self.paths.get(name, self.default_path)
             engine = create_engine(f"sqlite:///{path}", echo=self.echo)
-            Session = sessionmaker(bind=engine)
+            event.listen(engine, "connect", on_connect_listener(self.use_foreign_keys))
 
-            if self.use_foreign_keys:
-                # foreign keys are not enabled at runtime by default
-                connection = engine.connect()
-                connection.execute("PRAGMA foreign_keys=ON")
-                connection.close()
+            Session = sessionmaker(bind=engine)
 
             self.datasets[name] = engine, Session
 
