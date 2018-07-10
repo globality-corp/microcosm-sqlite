@@ -4,12 +4,12 @@ from microcosm_sqlite.builders.csv import CSVBuilder
 
 
 class BulkCSVBuilder:
-    def __init__(self, base_ctx_cls, graph):
-        self.base_ctx_cls = base_ctx_cls
+    def __init__(self, graph, dataset):
+        self.dataset = dataset
         self.graph = graph
 
     def build(self, model_fileobj):
-        with self.base_ctx_cls.new_context(
+        with self.dataset.new_context(
             graph=self.graph,
             defer_foreign_keys=True,
         ) as context:
