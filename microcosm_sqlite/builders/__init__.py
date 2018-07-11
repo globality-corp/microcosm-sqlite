@@ -13,5 +13,5 @@ class SQLiteBuilder:
     def __init__(self, graph):
         self.graph = graph
 
-    def csv(self, model_cls):
-        return CSVBuilder(self.graph, model_cls)
+    def csv(self, model_cls, **kwargs):
+        return CSVBuilder(self.graph, model_cls, **kwargs)
