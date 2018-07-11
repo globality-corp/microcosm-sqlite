@@ -102,7 +102,7 @@ class TestCSVBuilders:
             (Dog, self.dogs),
         ]
 
-        self.builder.bulk_csv(Example).build(bulk_input)
+        self.builder.csv(Example).bulk().build(bulk_input)
 
         with Example.new_context(self.graph):
             dogs = self.dog_store.search()
@@ -155,7 +155,7 @@ class TestCSVBuilders:
             (Person, more_people),
         ]
 
-        self.builder.bulk_csv(Example).build(bulk_input)
+        self.builder.csv(Example).bulk().build(bulk_input)
 
         with Example.new_context(self.graph):
             dogs = self.dog_store.search()

@@ -2,7 +2,6 @@
 Build SQLite databases.
 
 """
-from microcosm_sqlite.builders.bulk_csv import BulkCSVBuilder
 from microcosm_sqlite.builders.csv import CSVBuilder
 
 
@@ -14,8 +13,5 @@ class SQLiteBuilder:
     def __init__(self, graph):
         self.graph = graph
 
-    def csv(self, model_cls):
-        return CSVBuilder(self.graph, model_cls)
-
-    def bulk_csv(self, model_cls):
-        return BulkCSVBuilder(self.graph, model_cls)
+    def csv(self, model_cls, **kwargs):
+        return CSVBuilder(self.graph, model_cls, **kwargs)
