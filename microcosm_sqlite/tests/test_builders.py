@@ -3,6 +3,7 @@ Test database building.
 
 """
 from io import StringIO
+from tempfile import NamedTemporaryFile
 from textwrap import dedent
 
 from hamcrest import (
@@ -31,9 +32,12 @@ def csv(s):
 class TestCSVBuilders:
 
     def setup(self):
+        self.tmp_file = NamedTemporaryFile()
         loader = load_from_dict(
             sqlite=dict(
-                taxonomy=":memory:",
+                paths=dict(
+                    taxonomy=self.tmp_file.name,
+                ),
             ),
         )
         self.graph = create_object_graph("example", testing=True, loader=loader)
@@ -56,6 +60,9 @@ class TestCSVBuilders:
              2,Reza,1
              3,Rookie,1
         """))
+
+    def teardown(self):
+        self.tmp_file.close()
 
     def test_build_with_csv_builder(self):
         self.builder.csv(Person).build(self.people)
