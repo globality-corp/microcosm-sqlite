@@ -61,7 +61,7 @@ class TestCSVBuilders:
              3,Rookie,1
         """))
 
-    def terdown(self):
+    def teardown(self):
         self.tmp_file.close()
 
     def test_build_with_csv_builder(self):
