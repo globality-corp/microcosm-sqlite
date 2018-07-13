@@ -11,11 +11,20 @@ from sqlalchemy.orm import sessionmaker
 
 
 def on_connect_listener(use_foreign_keys):
-    def enforce_foreign_keys(connection, _):
+    def on_connect(dbapi_connection, _):
         if use_foreign_keys:
-            connection.execute("PRAGMA foreign_keys=ON")
+            dbapi_connection.execute("PRAGMA foreign_keys=ON")
 
-    return enforce_foreign_keys
+        # disable pysqlite's emitting of the BEGIN statement entirely,
+        # also stops it from emitting COMMIT before any DDL
+        # see: https://docs.sqlalchemy.org/en/latest/dialects/sqlite.html#serializable-isolation-savepoints-transactional-ddl  # noqa
+        dbapi_connection.isolation_level = None
+
+    return on_connect
+
+
+def on_begin_listener(connection):
+    connection.execute("BEGIN")
 
 
 @defaults(
@@ -57,7 +66,9 @@ class SQLiteBindFactory:
         if name not in self.datasets:
             path = self.paths.get(name, self.default_path)
             engine = create_engine(f"sqlite:///{path}", echo=self.echo)
+
             event.listen(engine, "connect", on_connect_listener(self.use_foreign_keys))
+            event.listen(engine, "begin", on_begin_listener)
 
             Session = sessionmaker(bind=engine)
 
