@@ -200,3 +200,15 @@ class TestCSVBuilders:
                     ),
                 ),
             )
+
+    def test_build_with_csv_builder_default(self):
+        """
+        Known values can be defaulted (for entire CSVs)
+
+        """
+        people = csv(dedent("""
+            id,first
+             1,Stephen
+             2,Dell
+        """))
+        self.builder.csv(Person).default(last="Curry").build(people)

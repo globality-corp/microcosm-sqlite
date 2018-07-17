@@ -5,33 +5,9 @@ CSV-based building.
 from csv import DictReader
 
 
-def get_columns(model_cls):
-    return {
-        column.name: (key, column)
-        for key, column in model_cls.__mapper__.columns.items()
-    }
-
-
-def as_tuple(columns, name, value):
-    key, column = columns[name]
-    if not value and column.nullable:
-        return key, None
-    return key, value
-
-
-def as_model(model_cls, row):
-    columns = get_columns(model_cls)
-
-    return model_cls(**dict(
-        as_tuple(columns, name, value)
-        for name, value in row.items()
-        if name in columns
-    ))
-
-
 class CSVBuilder:
     """
-    CSV-based builer for a single model class (non bulk mode)
+    CSV-based builder for a single model class (non bulk mode)
     and multi model class (bulk mode).
 
     """
@@ -44,6 +20,7 @@ class CSVBuilder:
         self.graph = graph
         self.model_cls = model_cls
         self.bulk_mode = bulk_mode
+        self.defaults = dict()
 
     def build(self, build_input):
         if self.bulk_mode:
@@ -53,7 +30,10 @@ class CSVBuilder:
 
     def bulk(self):
         self.bulk_mode = True
+        return self
 
+    def default(self, **kwargs):
+        self.defaults.update(kwargs)
         return self
 
     def _build(self, fileobj):
@@ -61,7 +41,7 @@ class CSVBuilder:
 
         with self.model_cls.new_context(self.graph) as context:
             for row in csv:
-                model = as_model(self.model_cls, row)
+                model = self.as_model(self.model_cls, row)
                 context.session.add(model)
             context.commit()
 
@@ -75,7 +55,33 @@ class CSVBuilder:
 
                 for row in reader:
                     context.session.add(
-                        as_model(model_cls, row),
+                        self.as_model(model_cls, row),
                     )
 
             context.session.commit()
+
+    def as_model(self, model_cls, row):
+        columns = self.get_columns(model_cls)
+
+        row_dict = self.defaults.copy()
+        row_dict.update(row)
+
+        return model_cls(**dict(
+            self.as_tuple(columns, name, value)
+            for name, value in row_dict.items()
+            if name in columns
+        ))
+
+    @staticmethod
+    def get_columns(model_cls):
+        return {
+            column.name: (key, column)
+            for key, column in model_cls.__mapper__.columns.items()
+        }
+
+    @staticmethod
+    def as_tuple(columns, name, value):
+        key, column = columns[name]
+        if not value and column.nullable:
+            return key, None
+        return key, value
