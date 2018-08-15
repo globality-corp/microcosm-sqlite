@@ -36,7 +36,7 @@ class TestCSVBuilders:
         loader = load_from_dict(
             sqlite=dict(
                 paths=dict(
-                    taxonomy=self.tmp_file.name,
+                    example=self.tmp_file.name,
                 ),
             ),
         )

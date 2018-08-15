@@ -28,6 +28,7 @@ setup(
         "microcosm.factories": [
             "sqlite = microcosm_sqlite.factories:SQLiteBindFactory",
             "sqlite_builder = microcosm_sqlite.builders:SQLiteBuilder",
+            "sqlite_dumper = microcosm_sqlite.dumpers:SQLiteDumper",
         ],
     },
     tests_require=[
