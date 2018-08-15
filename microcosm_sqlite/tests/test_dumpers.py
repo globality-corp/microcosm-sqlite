@@ -59,8 +59,8 @@ class TestCSVDumpers:
         self.tmp_file.close()
 
     def test_build_with_csv_builder(self):
-        self.dumper.csv(self.person_store).dump(self.outfile)
+        self.dumper.csv(Person).dump(self.outfile)
         assert_that(
             self.outfile.getvalue(),
-            equal_to("id,first,last\r\n2,Klay,Thompson\r\n1,Stephen,Curry\r\n")
+            equal_to("id,first,last\r\n1,Stephen,Curry\r\n2,Klay,Thompson\r\n")
         )
