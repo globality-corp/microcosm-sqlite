@@ -44,14 +44,10 @@ class SQLiteBindFactory:
         self.use_foreign_keys = strtobool(graph.config.sqlite.use_foreign_keys)
 
         self.datasets = dict()
-        if graph.metadata.testing:
-            self.paths = dict()
-        else:
-            # Avoid this when testing to default to in-memory DB
-            self.paths = {
-                entry_point.name: entry_point.load()()
-                for entry_point in iter_entry_points("microcosm.sqlite")
-            }
+        self.paths = {
+            entry_point.name: entry_point.load()()
+            for entry_point in iter_entry_points("microcosm.sqlite")
+        }
         self.paths.update(graph.config.sqlite.paths)
 
     def __getitem__(self, key):
