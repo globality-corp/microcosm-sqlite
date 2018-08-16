@@ -2,7 +2,7 @@
 from setuptools import find_packages, setup
 
 project = "microcosm-sqlite"
-version = "0.9.0"
+version = "0.10.0"
 
 setup(
     name=project,
@@ -28,6 +28,7 @@ setup(
         "microcosm.factories": [
             "sqlite = microcosm_sqlite.factories:SQLiteBindFactory",
             "sqlite_builder = microcosm_sqlite.builders:SQLiteBuilder",
+            "sqlite_dumper = microcosm_sqlite.dumpers:SQLiteDumper",
         ],
     },
     tests_require=[
