@@ -16,12 +16,12 @@ class CSVBuilder:
         graph,
         model_cls,
         bulk_mode=False,
-        debug_mode=False,
+        commit_on_insert=False,
     ):
         self.graph = graph
         self.model_cls = model_cls
         self.bulk_mode = bulk_mode
-        self.debug_mode = debug_mode
+        self.commit_on_insert = commit_on_insert
         self.defaults = dict()
 
     def build(self, build_input):
@@ -45,11 +45,11 @@ class CSVBuilder:
             for row in csv:
                 model = self.as_model(self.model_cls, row)
                 context.session.add(model)
-                if self.debug_mode:
-                    # Commit rows individually in debug mode
+                if self.commit_on_insert:
+                    # Commit rows individually
                     context.commit()
 
-            if not self.debug_mode:
+            if not self.commit_on_insert:
                 context.commit()
 
     def _build_in_bulk(self, model_fileobj):
@@ -64,11 +64,11 @@ class CSVBuilder:
                     context.session.add(
                         self.as_model(model_cls, row),
                     )
-                    if self.debug_mode:
-                        # Commit rows individually in debug mode
+                    if self.commit_on_insert:
+                        # Commit rows individually
                         context.session.commit()
 
-            if not self.debug_mode:
+            if not self.commit_on_insert:
                 context.session.commit()
 
     def as_model(self, model_cls, row):
