@@ -16,10 +16,12 @@ class CSVBuilder:
         graph,
         model_cls,
         bulk_mode=False,
+        debug_mode=False,
     ):
         self.graph = graph
         self.model_cls = model_cls
         self.bulk_mode = bulk_mode
+        self.debug_mode = debug_mode
         self.defaults = dict()
 
     def build(self, build_input):
@@ -43,7 +45,12 @@ class CSVBuilder:
             for row in csv:
                 model = self.as_model(self.model_cls, row)
                 context.session.add(model)
-            context.commit()
+                if self.debug_mode:
+                    # Commit rows individually in debug mode
+                    context.commit()
+
+            if not self.debug_mode:
+                context.commit()
 
     def _build_in_bulk(self, model_fileobj):
         with self.model_cls.new_context(
@@ -57,8 +64,12 @@ class CSVBuilder:
                     context.session.add(
                         self.as_model(model_cls, row),
                     )
+                    if self.debug_mode:
+                        # Commit rows individually in debug mode
+                        context.session.commit()
 
-            context.session.commit()
+            if not self.debug_mode:
+                context.session.commit()
 
     def as_model(self, model_cls, row):
         columns = self.get_columns(model_cls)
