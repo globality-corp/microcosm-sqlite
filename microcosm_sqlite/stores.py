@@ -90,13 +90,14 @@ class Store(metaclass=ABCMeta):
         """
         pass
 
-    def count(self, **kwargs):
+    def count(self, offset=None, limit=None, **kwargs):
         """
         Count the number of models matching some criterion.
 
         """
         query = self._query()
         query = self._filter(query, **kwargs)
+        query = self._paginate(query, offset=offset, limit=limit)
         return query.count()
 
     def create(self, instance):
@@ -124,24 +125,38 @@ class Store(metaclass=ABCMeta):
 
         return True
 
-    def first(self, **kwargs):
+    def first(self, offset=None, limit=None, **kwargs):
         """
         Returns the first match based on criteria or None.
 
+        :param offset: pagination offset, if any
+        :param limit: pagination limit, if any
+
         """
+        # Note that the ordering here is important.  In order to produce valid
+        # SQL, _order_by must occur before _paginate, and _filter must occur
+        # before _order_by.
         query = self._query()
-        query = self._order_by(query, **kwargs)
         query = self._filter(query, **kwargs)
+        query = self._order_by(query, **kwargs)
+        query = self._paginate(query, offset=offset, limit=limit)
         return query.first()
 
-    def one(self, **kwargs):
+    def one(self, offset=None, limit=None, **kwargs):
         """
         Returns a single match or raise an error.
 
+        :param offset: pagination offset, if any
+        :param limit: pagination limit, if any
+
         """
+        # Note that the ordering here is important.  In order to produce valid
+        # SQL, _order_by must occur before _paginate, and _filter must occur
+        # before _order_by.
         query = self._query()
-        query = self._order_by(query, **kwargs)
         query = self._filter(query, **kwargs)
+        query = self._order_by(query, **kwargs)
+        query = self._paginate(query, offset=offset, limit=limit)
         try:
             return query.one()
         except NoResultFound as error:
@@ -149,7 +164,7 @@ class Store(metaclass=ABCMeta):
         except MultipleResultsFound as error:
             raise MultipleModelsFoundError(error)
 
-    def search(self, **kwargs):
+    def search(self, offset=None, limit=None, **kwargs):
         """
         Return the list of models matching some criterion.
 
@@ -157,9 +172,14 @@ class Store(metaclass=ABCMeta):
         :param limit: pagination limit, if any
 
         """
+        # Note that the ordering here is important.  In order to produce valid
+        # SQL, _order_by must occur before _paginate, and _filter must occur
+        # before _order_by.
         query = self._query()
-        query = self._order_by(query, **kwargs)
         query = self._filter(query, **kwargs)
+        query = self._order_by(query, **kwargs)
+        query = self._paginate(query, offset=offset, limit=limit)
+
         return query.all()
 
     def _query(self):
@@ -171,18 +191,14 @@ class Store(metaclass=ABCMeta):
             self.model_class,
         )
 
-    def _filter(self, query, offset=None, limit=None, **kwargs):
+    def _filter(self, query, **kwargs):
         """
         Filter a query with user-supplied arguments.
 
-        :param offset: pagination offset, if any
-        :param limit: pagination limit, if any
+        By default, it is a noop.  Derived classes can override this method to
+        add filters or except clauses to the query.
 
         """
-        if offset is not None:
-            query = query.offset(offset)
-        if limit is not None:
-            query = query.limit(limit)
         return query
 
     def _order_by(self, query, **kwargs):
@@ -192,6 +208,22 @@ class Store(metaclass=ABCMeta):
         By default, is a noop.
 
         """
+        return query
+
+    def _paginate(self, query, offset=None, limit=None):
+        """
+        Handle limit and offset.
+
+        :param offset: pagination offset, if any
+        :param limit: pagination limit, if any
+
+        """
+
+        if offset is not None:
+            query = query.offset(offset)
+        if limit is not None:
+            query = query.limit(limit)
+
         return query
 
     @property

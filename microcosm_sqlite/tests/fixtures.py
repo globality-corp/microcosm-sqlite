@@ -11,6 +11,7 @@ from sqlalchemy import (
     String,
 )
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import select
 
 from microcosm_sqlite import DataSet, Store
 from microcosm_sqlite.models import IdentityMixin
@@ -29,6 +30,12 @@ class Person(IdentityMixin, Example):
     @property
     def identity(self):
         return self.id
+
+    def __repr__(self):
+        return f'{self.__class__.__name__}("{self.id}")'
+
+    def __str__(self):
+        return f'{self.first} {self.last}'
 
     __table_args__ = (
         Index(
@@ -78,6 +85,19 @@ class PersonStore(Store):
             Person.first.asc(),
             Person.last.asc(),
         )
+
+
+class PersonExclusionStore(PersonStore):
+    def _except_clause_for(self, exclude_first):
+        return select([Person]).where(Person.first == exclude_first)
+
+    def _filter(self, query, exclude_first=None, **kwargs):
+        if exclude_first is not None:
+            query = query.except_(
+                self._except_clause_for(exclude_first=exclude_first)
+            )
+
+        return super()._filter(query, **kwargs)
 
 
 class DogStore(Store):
