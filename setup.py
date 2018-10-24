@@ -2,7 +2,7 @@
 from setuptools import find_packages, setup
 
 project = "microcosm-sqlite"
-version = "0.12.0"
+version = "0.13.0"
 
 setup(
     name=project,
@@ -14,6 +14,7 @@ setup(
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     include_package_data=True,
     zip_safe=False,
+    python_requires=">=3.6",
     keywords="microcosm",
     install_requires=[
         "microcosm>=2.0.0",
@@ -33,7 +34,6 @@ setup(
     },
     tests_require=[
         "coverage>=3.7.1",
-        "mock>=2.0.0",
         "PyHamcrest>=1.8.5",
     ],
 )

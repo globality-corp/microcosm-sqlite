@@ -54,13 +54,24 @@ class TestCSVDumpers:
                 )
             )
             self.person_store.session.commit()
+        self.context = Person.new_context(self.graph).open()
 
     def teardown(self):
         self.tmp_file.close()
 
-    def test_build_with_csv_builder(self):
+    def test_dump_with_csv_dump(self):
         self.dumper.csv(Person).dump(self.outfile)
         assert_that(
             self.outfile.getvalue(),
             equal_to("id,first,last\r\n1,Stephen,Curry\r\n2,Klay,Thompson\r\n")
+        )
+
+    def test_dump_selected_portion(self):
+        self.dumper.csv(Person).dump(
+            self.outfile,
+            items=self.person_store.search(first="Klay")
+        )
+        assert_that(
+            self.outfile.getvalue(),
+            equal_to("id,first,last\r\n2,Klay,Thompson\r\n")
         )

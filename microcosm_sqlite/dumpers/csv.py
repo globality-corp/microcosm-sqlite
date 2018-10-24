@@ -25,13 +25,15 @@ class CSVDumper:
         self.defaults.update(kwargs)
         return self
 
-    def dump(self, fileobj):
+    def dump(self, fileobj, items=None):
+        if items is None:
+            items = self.model_cls.session.query(self.model_cls).all()
         writer = DictWriter(fileobj, fieldnames=self.get_columns())
 
         writer.writeheader()
 
         with self.model_cls.new_context(self.graph):
-            for item in self.model_cls.session.query(self.model_cls).all():
+            for item in items:
                 writer.writerow(item._members())
 
     def get_columns(self):
