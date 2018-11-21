@@ -32,6 +32,7 @@ def on_begin_listener(connection):
     path=":memory:",
     paths=dict(),
     use_foreign_keys="True",
+    autocommit=False,
 )
 class SQLiteBindFactory:
     """
@@ -42,6 +43,7 @@ class SQLiteBindFactory:
         self.default_path = graph.config.sqlite.path
         self.echo = strtobool(graph.config.sqlite.echo)
         self.use_foreign_keys = strtobool(graph.config.sqlite.use_foreign_keys)
+        self.autocommit = graph.config.sqlite.autocommit
 
         self.datasets = dict()
         self.paths = {
@@ -70,7 +72,7 @@ class SQLiteBindFactory:
             event.listen(engine, "connect", on_connect_listener(self.use_foreign_keys))
             event.listen(engine, "begin", on_begin_listener)
 
-            Session = sessionmaker(bind=engine)
+            Session = sessionmaker(bind=engine, autocommit=self.autocommit)
 
             self.datasets[name] = engine, Session
 
