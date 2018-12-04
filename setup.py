@@ -19,6 +19,7 @@ setup(
     install_requires=[
         "microcosm>=2.0.0",
         "SQLAlchemy>=1.2.0",
+        "SQLAlchemy-Utils>=0.33.3",
     ],
     setup_requires=[
         "nose>=1.3.6",
