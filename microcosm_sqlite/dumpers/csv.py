@@ -14,21 +14,27 @@ class CSVDumper:
     def __init__(
         self,
         graph,
-        model_cls,
-        bulk_mode=False,
+        store,
+        model_cls=None,
     ):
         self.graph = graph
-        self.model_cls = model_cls
+        self.store = store
+        self.model_cls = model_cls or store.model_class
         self.defaults = dict()
 
     def default(self, **kwargs):
         self.defaults.update(kwargs)
         return self
 
-    def dump(self, fileobj, items=None):
+    def dump(self, fileobj, items=None, fieldnames=None, extrasaction=None):
         if items is None:
-            items = self.model_cls.session.query(self.model_cls).all()
-        writer = DictWriter(fileobj, fieldnames=self.get_columns())
+            items = self.store.session.query(self.model_cls).all()
+
+        writer = DictWriter(
+            fileobj,
+            fieldnames=fieldnames or self.get_columns(),
+            extrasaction=extrasaction or 'raise',  # raise is the default
+        )
 
         writer.writeheader()
 
@@ -38,6 +44,6 @@ class CSVDumper:
 
     def get_columns(self):
         return {
-            column.name: (key, column)
-            for key, column in self.model_cls.__mapper__.columns.items()
+            key
+            for key in self.model_cls.__mapper__.columns.keys()
         }
