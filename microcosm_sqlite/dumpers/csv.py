@@ -26,14 +26,14 @@ class CSVDumper:
         self.defaults.update(kwargs)
         return self
 
-    def dump(self, fileobj, items=None, fieldnames=None, extrasaction=None):
+    def dump(self, fileobj, items=None, field_names=None, extras_action=None):
         if items is None:
             items = self.store.session.query(self.model_cls).all()
 
         writer = DictWriter(
             fileobj,
-            fieldnames=fieldnames or self.get_columns(),
-            extrasaction=extrasaction or 'raise',  # raise is the default
+            fieldnames=field_names or self.get_columns(),
+            extrasaction=extras_action or 'raise',  # raise is the default
         )
 
         writer.writeheader()

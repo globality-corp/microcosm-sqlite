@@ -62,7 +62,7 @@ class TestCSVDumpers:
     def test_dump_with_csv_dump(self):
         self.dumper.csv(self.person_store).dump(
             self.outfile,
-            fieldnames=["id", "first", "last"],
+            field_names=["id", "first", "last"],
         )
         assert_that(
             self.outfile.getvalue(),
@@ -73,7 +73,7 @@ class TestCSVDumpers:
         self.dumper.csv(self.person_store).dump(
             self.outfile,
             items=self.person_store.search(first="Klay"),
-            fieldnames=["id", "first", "last"],
+            field_names=["id", "first", "last"],
         )
         assert_that(
             self.outfile.getvalue(),
