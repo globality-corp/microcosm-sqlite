@@ -60,16 +60,20 @@ class TestCSVDumpers:
         self.tmp_file.close()
 
     def test_dump_with_csv_dump(self):
-        self.dumper.csv(Person).dump(self.outfile)
+        self.dumper.csv(self.person_store).dump(
+            self.outfile,
+            field_names=["id", "first", "last"],
+        )
         assert_that(
             self.outfile.getvalue(),
             equal_to("id,first,last\r\n1,Stephen,Curry\r\n2,Klay,Thompson\r\n")
         )
 
     def test_dump_selected_portion(self):
-        self.dumper.csv(Person).dump(
+        self.dumper.csv(self.person_store).dump(
             self.outfile,
-            items=self.person_store.search(first="Klay")
+            items=self.person_store.search(first="Klay"),
+            field_names=["id", "first", "last"],
         )
         assert_that(
             self.outfile.getvalue(),
