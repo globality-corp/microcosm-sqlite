@@ -1,5 +1,6 @@
 from hamcrest import assert_that, equal_to, is_
 from sqlalchemy import Column, ForeignKey, Integer
+from typing import Any
 
 from microcosm_sqlite import DataSet
 
