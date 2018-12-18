@@ -4,7 +4,7 @@ from sqlalchemy import Column, ForeignKey, Integer
 from microcosm_sqlite import DataSet
 
 
-Base = DataSet.create("example")
+Base: Any = DataSet.create("example")
 
 
 class Foo(Base):

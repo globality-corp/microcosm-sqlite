@@ -18,7 +18,7 @@ from microcosm_sqlite.models import IdentityMixin
 from typing import Any
 
 
-Example : Any = DataSet.create("example")
+Example: Any = DataSet.create("example")
 
 
 class Person(IdentityMixin, Example):

@@ -12,7 +12,7 @@ from microcosm_sqlite.types import Truthy
 from typing import Any
 
 
-Types : Any = DataSet.create("types")
+Types: Any = DataSet.create("types")
 
 
 class Example(IdentityMixin, Types):
