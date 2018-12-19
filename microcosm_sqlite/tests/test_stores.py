@@ -95,6 +95,8 @@ class TestStore:
         self.populate()
 
         assert_that(self.store.count(), is_(equal_to(3)))
+        # pagination arguments are not supported for count and should be ignored
+        # if passed in
         assert_that(self.store.count(offset=1), is_(equal_to(3)))
         assert_that(self.store.count(limit=1), is_(equal_to(3)))
         assert_that(self.store.count(offset=1, limit=1), is_(equal_to(3)))
