@@ -9,9 +9,10 @@ from sqlalchemy import Column, Integer
 from microcosm_sqlite import DataSet
 from microcosm_sqlite.models import IdentityMixin
 from microcosm_sqlite.types import Truthy
+from typing import Any
 
 
-Types = DataSet.create("types")
+Types: Any = DataSet.create("types")
 
 
 class Example(IdentityMixin, Types):

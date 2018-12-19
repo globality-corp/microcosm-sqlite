@@ -15,9 +15,10 @@ from sqlalchemy.sql import select
 
 from microcosm_sqlite import DataSet, Store
 from microcosm_sqlite.models import IdentityMixin
+from typing import Any
 
 
-Example = DataSet.create("example")
+Example: Any = DataSet.create("example")
 
 
 class Person(IdentityMixin, Example):
