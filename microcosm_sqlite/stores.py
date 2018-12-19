@@ -90,14 +90,13 @@ class Store(metaclass=ABCMeta):
         """
         pass
 
-    def count(self, offset=None, limit=None, **kwargs):
+    def count(self, **kwargs):
         """
         Count the number of models matching some criterion.
 
         """
         query = self._query()
         query = self._filter(query, **kwargs)
-        query = self._paginate(query, offset=offset, limit=limit)
         return query.count()
 
     def create(self, instance):
