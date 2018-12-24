@@ -26,7 +26,7 @@ class CSVDumper:
         self.defaults.update(kwargs)
         return self
 
-    def dump(self, fileobj, items=None, field_names=None, extras_action=None):
+    def dump(self, fileobj, items=None, field_names=None, extras_action=None, custom_header=None):
         if items is None:
             items = self.store.session.query(self.model_cls).all()
 
@@ -36,7 +36,10 @@ class CSVDumper:
             extrasaction=extras_action or 'raise',  # raise is the default
         )
 
-        writer.writeheader()
+        if custom_header:
+            writer.writerow(custom_header)
+        else:
+            writer.writeheader()
 
         with self.model_cls.new_context(self.graph):
             for item in items:
