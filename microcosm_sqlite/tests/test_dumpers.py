@@ -5,18 +5,11 @@ Test database building.
 from io import StringIO
 from tempfile import NamedTemporaryFile
 
-from hamcrest import (
-    assert_that,
-    equal_to,
-)
+from hamcrest import assert_that, equal_to
 from microcosm.api import create_object_graph
 from microcosm.loaders import load_from_dict
 
-from microcosm_sqlite.tests.fixtures import (
-    Example,
-    Person,
-    PersonStore,
-)
+from microcosm_sqlite.tests.fixtures import Example, Person, PersonStore
 
 
 class TestCSVDumpers:
@@ -67,6 +60,21 @@ class TestCSVDumpers:
         assert_that(
             self.outfile.getvalue(),
             equal_to("id,first,last\r\n1,Stephen,Curry\r\n2,Klay,Thompson\r\n")
+        )
+
+    def test_dump_with_csv_dump_custom_header(self):
+        self.dumper.csv(self.person_store).dump(
+            self.outfile,
+            field_names=["id", "first", "last"],
+            custom_header=dict(
+                id="ID",
+                first="First Name",
+                last="Last Name",
+            ),
+        )
+        assert_that(
+            self.outfile.getvalue(),
+            equal_to("ID,First Name,Last Name\r\n1,Stephen,Curry\r\n2,Klay,Thompson\r\n")
         )
 
     def test_dump_selected_portion(self):
