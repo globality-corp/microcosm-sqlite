@@ -3,9 +3,9 @@ SQLite factories.
 
 """
 from distutils.util import strtobool
-from pkg_resources import iter_entry_points
 
 from microcosm.api import defaults
+from pkg_resources import iter_entry_points
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 
@@ -47,7 +47,7 @@ class SQLiteBindFactory:
 
         self.datasets = dict()
         self.paths = {
-            entry_point.name: entry_point.load()()
+            entry_point.name: entry_point.load()(graph)
             for entry_point in iter_entry_points("microcosm.sqlite")
         }
         self.paths.update(graph.config.sqlite.paths)
