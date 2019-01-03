@@ -47,7 +47,7 @@ class SQLiteBindFactory:
 
         self.datasets = dict()
         self.paths = {
-            entry_point.name: entry_point.load()()
+            entry_point.name: entry_point.load()(graph)
             for entry_point in iter_entry_points("microcosm.sqlite")
         }
         self.paths.update(graph.config.sqlite.paths)
