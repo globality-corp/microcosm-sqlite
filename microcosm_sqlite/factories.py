@@ -3,9 +3,9 @@ SQLite factories.
 
 """
 from distutils.util import strtobool
+from pkg_resources import iter_entry_points
 
 from microcosm.api import defaults
-from pkg_resources import iter_entry_points
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 
