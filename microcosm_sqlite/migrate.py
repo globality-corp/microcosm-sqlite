@@ -10,9 +10,11 @@ To use this entry enty point instead of the Alembic CLI:
 
  0. Don't use `alembic init`
 
- 1. Write models that extend `microcosm_postgres.models.Model`
+ 1. Define a `Base` like
 
- 2. Add a `migrations` directory within your source tree.
+        Base = DataSet.create("foo")
+
+ 2. Add a `sqlite-migrations/foo` directory within your source tree.
 
     This directory does not need to be an importable Python module, but it should
     be included as part of your distribution so that migrations ship with the service.
@@ -20,7 +22,6 @@ To use this entry enty point instead of the Alembic CLI:
  3. Initialize your object graph (including your models):
 
         from microcosm.api import create_object_graph
-        from microcosm_postgres.example import Company, Employee  # noqa
 
         graph = create_object_graph(name="example", testing=True)
 
@@ -30,7 +31,7 @@ To use this entry enty point instead of the Alembic CLI:
 
  4. Write an entry point that invokes the `main` function with the object graph:
 
-        main(graph)
+        main(graph, Base)
 
 """
 from contextlib import contextmanager
