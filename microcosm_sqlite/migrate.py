@@ -23,11 +23,21 @@ To use this entry enty point instead of the Alembic CLI:
 
         from microcosm.api import create_object_graph
 
-        graph = create_object_graph(name="example", testing=True)
+        graph = create_object_graph(
+            name="example",
+            loader=load_from_dict(
+                sqlite=dict(
+                    use_foreign_keys="False",
+                )
+            )
+        )
 
     The migrations directory is loaded by default assuming that the `name` attribute
     is a module name (though this behavior can be customized; see `microcosm.metadata:Metadata`)
-    or by wiring up a stirng as the "migrations_dir" component of the graph.
+    or by wiring up a string as the "migrations_dir" component of the graph.
+
+    Note that `use_foreign_keys` must be false in order for Alembic batch
+    migrations to work correctly.
 
  4. Write an entry point that invokes the `main` function with the object graph:
 
@@ -112,6 +122,11 @@ def run_online_migration(self, Base):
             connection=connection,
             # assumes that all models extend our base
             target_metadata=Base.metadata,
+
+            # We use this to allow Alembic to automatically work around lack of
+            # ALTER TABLE support in SQLite
+            render_as_batch=True,
+
             **get_alembic_environment_options(self.graph),
         )
 
