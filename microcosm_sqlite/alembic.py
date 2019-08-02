@@ -1,62 +1,15 @@
-"""
-Alembic CLI with simplified configuration.
-
-Alembic is a terrific tool that makes some unfortunate choices about configuration,
-expecting a verbose directory structure with several layers of configuration.
-
-This module monkey patches Alembic's CLI tool to work better within a microcosm.
-
-To use this entry enty point instead of the Alembic CLI:
-
- 0. Don't use `alembic init`
-
- 1. Define a `Base` like
-
-        Base = DataSet.create("foo")
-
- 2. Add a `sqlite-migrations/foo` directory within your source tree.
-
-    This directory does not need to be an importable Python module, but it should
-    be included as part of your distribution so that migrations ship with the service.
-
- 3. Initialize your object graph (including your models):
-
-        from microcosm.api import create_object_graph
-
-        graph = create_object_graph(
-            name="example",
-            loader=load_from_dict(
-                sqlite=dict(
-                    use_foreign_keys="False",
-                )
-            )
-        )
-
-    The migrations directory is loaded by default assuming that the `name` attribute
-    is a module name (though this behavior can be customized; see `microcosm.metadata:Metadata`)
-    or by wiring up a string as the "migrations_dir" component of the graph.
-
-    Note that `use_foreign_keys` must be false in order for Alembic batch
-    migrations to work correctly.
-
- 4. Write an entry point that invokes the `main` function with the object graph:
-
-        main(graph, Base)
-
-"""
 from contextlib import contextmanager
 from functools import partial
 from os.path import join
 from pathlib import Path
 from shutil import rmtree
-from sys import argv
 from tempfile import mkdtemp
 from textwrap import dedent
 
 from microcosm.errors import LockedGraphError, NotBoundError
 
 from alembic import context
-from alembic.config import CommandLine, Config
+from alembic.config import Config
 from alembic.script import ScriptDirectory
 
 
@@ -107,7 +60,7 @@ def get_alembic_environment_options(graph):
         return dict()
 
 
-def run_online_migration(self, Base):
+def run_online_migration(self, Base, process_revision_directives):
     """
     Run an online migration using microcosm configuration.
 
@@ -127,6 +80,8 @@ def run_online_migration(self, Base):
             # ALTER TABLE support in SQLite
             render_as_batch=True,
 
+            process_revision_directives=process_revision_directives,
+
             **get_alembic_environment_options(self.graph),
         )
 
@@ -134,14 +89,14 @@ def run_online_migration(self, Base):
             context.run_migrations()
 
 
-def make_script_py_mako():
+def make_script_py_mako(include_downgrade):
     """
     Generate the template for new migrations.
 
     This function takes the place of the `script.py.mako` file in the alembic directory.
 
     """
-    return dedent('''\
+    template = dedent('''\
     """
     ${message}
 
@@ -163,15 +118,21 @@ def make_script_py_mako():
 
     def upgrade():
         ${upgrades if upgrades else "pass"}
-
-
-    def downgrade():
-        ${downgrades if downgrades else "pass"}
     ''')
+
+    if include_downgrade:
+        template += dedent('''\
+
+
+        def downgrade():
+            ${downgrades if downgrades else "pass"}
+        ''')
+
+    return template
 
 
 @contextmanager
-def patch_script_directory(graph, Base):
+def patch_script_directory(graph, Base, include_downgrade=True, process_revision_directives=None):
     """
     Monkey patch the `ScriptDirectory` class, working around configuration assumptions.
 
@@ -188,12 +149,21 @@ def patch_script_directory(graph, Base):
 
     # use a temporary directory for the revision template
     with open(join(temporary_dir, "script.py.mako"), "w") as file_:
-        file_.write(make_script_py_mako())
+        file_.write(make_script_py_mako(include_downgrade))
         file_.flush()
 
     # monkey patch our script directory and migration logic
     setattr(ScriptDirectory, "from_config", classmethod(make_script_directory))
-    setattr(ScriptDirectory, "run_env", partial(run_online_migration, ScriptDirectory, Base))
+    setattr(
+        ScriptDirectory,
+        "run_env",
+        partial(
+            run_online_migration,
+            ScriptDirectory,
+            Base,
+            process_revision_directives,
+        ),
+    )
     setattr(ScriptDirectory, "graph", graph)
     try:
         yield temporary_dir
@@ -223,30 +193,3 @@ def get_migrations_dir(graph, name):
     if not migrations_dir.is_dir():
         raise Exception("Migrations dir must exist: {}".format(migrations_dir))
     return str(migrations_dir)
-
-
-def main(graph, Base, *args):
-    """
-    Entry point for invoking Alembic's `CommandLine`.
-
-    Alembic's CLI defines its own argument parsing and command invocation; we want
-    to use these directly but define configuration our own way. This function takes
-    the behavior of `CommandLine.main()` and reinterprets it with our patching.
-
-    :param graph: an initialized object graph
-    :param migration_dir: the path to the migrations directory
-
-    """
-    name = Base.resolve().__name__
-    migrations_dir = get_migrations_dir(graph, name)
-
-    cli = CommandLine()
-    options = cli.parser.parse_args(args if args else argv[1:])
-    if not hasattr(options, "cmd"):
-        cli.parser.error("too few arguments")
-    if options.cmd[0].__name__ == "init":
-        cli.parser.error("Alembic 'init' command should not be used in the microcosm!")
-
-    with patch_script_directory(graph, Base) as temporary_dir:
-        config = make_alembic_config(temporary_dir, migrations_dir)
-        cli.run_cmd(config, options)

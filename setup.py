@@ -8,6 +8,7 @@ setup(
     name=project,
     version=version,
     description="Opinionated persistence with SQLite",
+    long_description=open("README.md").read(),
     author="Globality Engineering",
     author_email="engineering@globality.com",
     url="https://github.com/globality-corp/microcosm-sqlite",

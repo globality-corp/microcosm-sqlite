@@ -1,6 +1,6 @@
 *
 !microcosm_sqlite
-microcosm_sqlite/test*
+microcosm_sqlite/tests
 !dist/*-none-any.whl
 !entrypoint.sh
 !MANIFEST.in
