@@ -2,13 +2,14 @@
 from setuptools import find_packages, setup
 
 project = "microcosm-sqlite"
-version = "0.20.0"
+version = "0.21.0"
 
 setup(
     name=project,
     version=version,
     description="Opinionated persistence with SQLite",
     long_description=open("README.md").read(),
+    long_description_content_type="text/markdown",
     author="Globality Engineering",
     author_email="engineering@globality.com",
     url="https://github.com/globality-corp/microcosm-sqlite",
