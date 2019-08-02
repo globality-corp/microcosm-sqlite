@@ -29,7 +29,7 @@ class DataSet:
 
         Note that we use `naming_convention` to ensure that all of our
         constraints automatically get names if one is not provided.  Otherwise
-        Alembic migrations will fail.
+        Alembic migrations will fail.  See https://alembic.sqlalchemy.org/en/latest/naming.html
 
         """
         return declarative_base(
