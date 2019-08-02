@@ -2,9 +2,9 @@
 Custom types.
 
 """
+from distutils.util import strtobool
 from enum import Enum
 
-from distutils.util import strtobool
 from sqlalchemy.types import Boolean, TypeDecorator, Unicode
 
 

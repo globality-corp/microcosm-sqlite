@@ -5,11 +5,7 @@ from microcosm.api import create_object_graph
 from microcosm.loaders import load_from_dict
 
 from microcosm_sqlite.context import SessionContext
-from microcosm_sqlite.tests.fixtures import (
-    Example,
-    Person,
-    PersonExclusionStore
-)
+from microcosm_sqlite.tests.fixtures import Example, Person, PersonExclusionStore
 
 
 def test_except():
