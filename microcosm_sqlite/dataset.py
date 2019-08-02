@@ -4,8 +4,10 @@ Abstraction around a SQLite-based data set.
 """
 from inspect import getmro
 
+from sqlalchemy import MetaData
 from sqlalchemy.ext.declarative import declarative_base
 
+from microcosm_sqlite.constants import naming_convention
 from microcosm_sqlite.context import SessionContext
 
 
@@ -25,8 +27,17 @@ class DataSet:
         every declarative base class is expected to use a unique base class, which is
         used to identity the correct engine and sessionmaker in the BindFactory.
 
+        Note that we use `naming_convention` to ensure that all of our
+        constraints automatically get names if one is not provided.  Otherwise
+        Alembic migrations will fail.  See https://alembic.sqlalchemy.org/en/latest/naming.html
+
         """
-        return declarative_base(name=name, cls=DataSet, **kwargs)
+        return declarative_base(
+            name=name,
+            cls=DataSet,
+            metadata=MetaData(naming_convention=naming_convention),
+            **kwargs,
+        )
 
     @classmethod
     def resolve(cls):

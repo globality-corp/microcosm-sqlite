@@ -2,12 +2,13 @@
 from setuptools import find_packages, setup
 
 project = "microcosm-sqlite"
-version = "0.19.0"
+version = "0.20.0"
 
 setup(
     name=project,
     version=version,
     description="Opinionated persistence with SQLite",
+    long_description=open("README.md").read(),
     author="Globality Engineering",
     author_email="engineering@globality.com",
     url="https://github.com/globality-corp/microcosm-sqlite",
@@ -17,9 +18,10 @@ setup(
     python_requires=">=3.6",
     keywords="microcosm",
     install_requires=[
-        "microcosm>=2.0.0",
-        "SQLAlchemy>=1.2.0",
         "SQLAlchemy-Utils>=0.33.3",
+        "SQLAlchemy>=1.2.0",
+        "alembic>=1.0.11",
+        "microcosm>=2.0.0",
     ],
     setup_requires=[
         "nose>=1.3.6",
