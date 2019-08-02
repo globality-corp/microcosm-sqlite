@@ -9,8 +9,8 @@ from textwrap import dedent
 from hamcrest import (
     assert_that,
     contains,
-    has_properties,
     equal_to,
+    has_properties,
     is_,
 )
 from microcosm.api import create_object_graph
