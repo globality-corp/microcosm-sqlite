@@ -47,6 +47,7 @@ To use this entry enty point instead of the Alembic CLI:
 from sys import argv
 
 from alembic.config import CommandLine
+
 from microcosm_sqlite.alembic import (
     get_migrations_dir,
     make_alembic_config,

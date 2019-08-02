@@ -6,11 +6,10 @@ from shutil import rmtree
 from tempfile import mkdtemp
 from textwrap import dedent
 
-from microcosm.errors import LockedGraphError, NotBoundError
-
 from alembic import context
 from alembic.config import Config
 from alembic.script import ScriptDirectory
+from microcosm.errors import LockedGraphError, NotBoundError
 
 
 def make_alembic_config(temporary_dir, migrations_dir):

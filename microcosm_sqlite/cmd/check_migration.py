@@ -32,6 +32,7 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 
 from alembic.config import CommandLine
+
 from microcosm_sqlite.alembic import (
     get_migrations_dir,
     make_alembic_config,
