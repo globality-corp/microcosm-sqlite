@@ -64,17 +64,12 @@ class Dog(IdentityMixin, Example):
 
 
 class PersonStore(Store):
+    model_class = Person
+    auto_filter_fields = [
+        model_class.first,
+    ]
 
-    @property
-    def model_class(self):
-        return Person
-
-    def _filter(self, query, first=None, last=None, **kwargs):
-        if first is not None:
-            query = query.filter(
-                Person.first == first,
-            )
-
+    def _filter(self, query, last=None, **kwargs):
         if last is not None:
             query = query.filter(
                 Person.last == last,
