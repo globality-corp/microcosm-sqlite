@@ -78,8 +78,14 @@ class Store(metaclass=ABCMeta):
     A persistence layer for SQLite-backed models.
 
     """
+    auto_filter_fields = ()
+
     def __init__(self, get_session=get_session):
         self.get_session = get_session
+        self.auto_filters = {
+            auto_filter_field.name: auto_filter_field
+            for auto_filter_field in self.auto_filter_fields
+        }
 
     @property
     @abstractmethod
@@ -198,6 +204,18 @@ class Store(metaclass=ABCMeta):
         add filters or except clauses to the query.
 
         """
+        query = self._auto_filter(query, **kwargs)
+        return query
+
+    def _auto_filter(self, query, **kwargs):
+        for key, value in kwargs.items():
+            if value is None:
+                continue
+            field = self.auto_filters.get(key)
+            if field is None:
+                continue
+            query = query.filter(field == value)
+
         return query
 
     def _order_by(self, query, **kwargs):
