@@ -85,7 +85,7 @@ class Store(metaclass=ABCMeta):
     def __init__(self, get_session=get_session):
         self.get_session = get_session
         self.auto_filters = {
-            auto_filter_field.name: auto_filter_field
+            auto_filter_field.key: auto_filter_field
             for auto_filter_field in (
                 self.auto_filter_fields or []
             )
