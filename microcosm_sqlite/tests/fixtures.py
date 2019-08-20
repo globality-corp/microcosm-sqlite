@@ -26,8 +26,8 @@ class Person(IdentityMixin, Example):
     __tablename__ = "person"
 
     id = Column(Integer, primary_key=True)
-    first = Column(String, nullable=False)
-    last = Column(String, nullable=False)
+    first = Column(String, name="First", nullable=False)
+    last = Column(String, name="Last", nullable=False)
 
     @property
     def identity(self):
