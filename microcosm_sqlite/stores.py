@@ -34,6 +34,7 @@ def get_session(store):
 class GetOrCreateSession:
 
     def __init__(self, graph, expire_on_commit=False):
+        graph.use("sqlite")
         self.graph = graph
         self.expire_on_commit = expire_on_commit
 
