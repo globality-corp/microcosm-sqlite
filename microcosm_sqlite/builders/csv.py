@@ -4,6 +4,8 @@ CSV-based building.
 """
 from csv import DictReader
 
+from sqlalchemy.sql.expression import delete, text
+
 
 class CSVBuilder:
     """
@@ -17,11 +19,13 @@ class CSVBuilder:
         model_cls,
         bulk_mode=False,
         commit_on_insert=False,
+        delete_before_load=False,
     ):
         self.graph = graph
         self.model_cls = model_cls
         self.bulk_mode = bulk_mode
         self.commit_on_insert = commit_on_insert
+        self.delete_before_load = delete_before_load
         self.defaults = dict()
 
     def build(self, build_input):
@@ -38,10 +42,20 @@ class CSVBuilder:
         self.defaults.update(kwargs)
         return self
 
+    def delete_all(self, model_class, session):
+        # NB not using store, as for some models, e.g. the ones
+        # resulting from a mixins, we don't have a store.
+        return session.execute(
+            delete(text(model_class.__tablename__)),
+        )
+
     def _build(self, fileobj):
         csv = DictReader(fileobj)
 
         with self.model_cls.new_context(self.graph) as context:
+            if self.delete_before_load:
+                self.delete_all(self.model_cls, context.session)
+
             for row in csv:
                 model = self.as_model(self.model_cls, row)
                 context.session.add(model)
@@ -58,6 +72,9 @@ class CSVBuilder:
             defer_foreign_keys=True,
         ) as context:
             for model_cls, fileobj in model_fileobj:
+                if self.delete_before_load:
+                    self.delete_all(model_cls, context.session)
+
                 reader = DictReader(fileobj)
 
                 for row in reader:

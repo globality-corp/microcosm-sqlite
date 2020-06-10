@@ -56,7 +56,7 @@ class TestSQLiteBindFactory:
         assert_that(FooSession.kw["bind"], is_(equal_to(foo_engine)))
 
         bar_engine, BarSession = self.graph.sqlite("bar")
-        assert_that(str(bar_engine.url), is_(equal_to(f"sqlite:///:memory:")))
+        assert_that(str(bar_engine.url), is_(equal_to("sqlite:///:memory:")))
         assert_that(BarSession.kw["bind"], is_(equal_to(bar_engine)))
 
         assert_that(foo_engine, is_not(equal_to(bar_engine)))
