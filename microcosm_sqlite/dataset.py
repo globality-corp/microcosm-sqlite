@@ -117,3 +117,35 @@ class DataSet:
         name = cls.resolve().__name__
         engine, _ = graph.sqlite(name)
         engine.dispose()
+
+
+def dispose_sqlite_connections(graph):
+    """
+    Dispose all SQLite connections, SQLAlchemy engine and
+    thread-local references to session.
+
+    Meant to be called on post-fork, to make sure we use
+    new DB connections in child processes.
+
+    Docs:
+      - https://docs.sqlalchemy.org/en/13/core/connections.html#engine-disposal
+      - https://www.sqlite.org/howtocorrupt.html (section 2.6)
+
+    """
+    for data_set in DataSet.__subclasses__():
+        # NB closing session in case it's open.
+        session = getattr(data_set, "session", None)
+        if session is not None:
+            session.close()
+
+        data_set.session = None
+
+        # NB cleanup thread-local session container (initialized in
+        # microcosm_sqlite.stores.GetOrCreateSession), to make sure
+        # we initialize new one in the child process.
+        try:
+            del data_set.local
+        except AttributeError:
+            pass
+
+        data_set.dispose(graph)
