@@ -2,7 +2,7 @@
 from setuptools import find_packages, setup
 
 project = "microcosm-sqlite"
-version = "0.24.0"
+version = "0.25.0"
 
 setup(
     name=project,
@@ -36,8 +36,13 @@ setup(
             "sqlite_dumper = microcosm_sqlite.dumpers:SQLiteDumper",
         ],
     },
-    tests_require=[
-        "coverage>=3.7.1",
-        "PyHamcrest>=1.8.5",
-    ],
+    extras_require={
+        "lint": [
+            "isort<5",
+        ],
+        "test": [
+            "coverage>=3.7.1",
+            "PyHamcrest>=1.8.5",
+        ],
+    },
 )
