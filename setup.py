@@ -36,8 +36,13 @@ setup(
             "sqlite_dumper = microcosm_sqlite.dumpers:SQLiteDumper",
         ],
     },
-    tests_require=[
-        "coverage>=3.7.1",
-        "PyHamcrest>=1.8.5",
-    ],
+    extras_require={
+        "lint": [
+            "isort<5",
+        ],
+        "test": [
+            "coverage>=3.7.1",
+            "PyHamcrest>=1.8.5",
+        ],
+    },
 )
