@@ -2,7 +2,7 @@
 from setuptools import find_packages, setup
 
 project = "microcosm-sqlite"
-version = "0.25.0"
+version = "0.26.0"
 
 setup(
     name=project,
@@ -19,7 +19,6 @@ setup(
     python_requires=">=3.6",
     keywords="microcosm",
     install_requires=[
-        "SQLAlchemy-Utils>=0.33.3",
         "SQLAlchemy>=1.2.0",
         "alembic>=1.0.11",
         "microcosm>=2.12.0",
