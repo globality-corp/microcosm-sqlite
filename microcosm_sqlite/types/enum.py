@@ -1,11 +1,6 @@
-"""
-Custom types.
-
-"""
-from distutils.util import strtobool
 from enum import Enum
 
-from sqlalchemy.types import Boolean, TypeDecorator, Unicode
+from sqlalchemy.types import TypeDecorator, Unicode
 
 
 class EnumType(TypeDecorator):
@@ -36,24 +31,3 @@ class EnumType(TypeDecorator):
         if value is None:
             return None
         return self.enum_class[value]
-
-
-class Truthy(TypeDecorator):
-    """
-    Truthy-aware boolean value.
-
-    Supports string-valued inputs (and handles them as gracefully as possible)
-
-    """
-    impl = Boolean
-
-    def process_bind_param(self, value, dialect):
-        if value is None:
-            return None
-        if isinstance(value, bool):
-            return value
-        if isinstance(value, str):
-            if not value:
-                return False
-            return strtobool(value)
-        return bool(value)
