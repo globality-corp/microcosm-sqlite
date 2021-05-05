@@ -7,9 +7,10 @@ from pkg_resources import iter_entry_points
 
 from microcosm.api import defaults
 from sqlalchemy import create_engine, event
+from sqlalchemy.exc import OperationalError
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import Selectable
-from sqlalchemy.exc import OperationalError
+
 
 
 def on_connect_listener(use_foreign_keys):
