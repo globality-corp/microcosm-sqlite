@@ -8,6 +8,8 @@ from pkg_resources import iter_entry_points
 from microcosm.api import defaults
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.sql import Selectable
+from sqlalchemy.exc import OperationalError
 
 
 def on_connect_listener(use_foreign_keys):
@@ -25,6 +27,33 @@ def on_connect_listener(use_foreign_keys):
 
 def on_begin_listener(connection):
     connection.execute("BEGIN")
+
+
+def on_before_execute(conn, clauseelement, multiparams, params):
+
+    if ('SELECT alembic_version' in str(clauseelement)):
+        # There's probably a more efficient way to ignore the SELECT alembic_version statement
+        # use a partial and wrap a flag value into this function and condition off of that...
+        return
+
+    if isinstance(clauseelement, Selectable):
+        try:
+            # First try to DETACH from the previous one
+            # then try to ATTACH to next one
+            conn.execute("DETACH DATABASE main_schema")
+        except OperationalError as error:
+            pass
+
+        try:
+            new_params = clauseelement.compile().params
+            if new_params.get('Language_1', None):
+                language = new_params.get('Language_1')
+            else:
+                language = 'english'
+
+            conn.execute(f"ATTACH DATABASE 'file:taxonomies/content/{language}.db' as main_schema")
+        except OperationalError as error:
+            pass
 
 
 @defaults(
@@ -71,6 +100,8 @@ class SQLiteBindFactory:
 
             event.listen(engine, "connect", on_connect_listener(self.use_foreign_keys))
             event.listen(engine, "begin", on_begin_listener)
+
+            event.listen(engine, "before_execute", on_before_execute)
 
             Session = sessionmaker(bind=engine, autocommit=self.autocommit)
 
