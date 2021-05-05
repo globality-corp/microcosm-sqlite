@@ -41,7 +41,7 @@ def on_before_execute(conn, clauseelement, multiparams, params):
             # First try to DETACH from the previous one
             # then try to ATTACH to next one
             conn.execute("DETACH DATABASE main_schema")
-        except OperationalError as error:
+        except OperationalError:
             pass
 
         try:
@@ -52,7 +52,7 @@ def on_before_execute(conn, clauseelement, multiparams, params):
                 language = 'english'
 
             conn.execute(f"ATTACH DATABASE 'file:taxonomies/content/{language}.db' as main_schema")
-        except OperationalError as error:
+        except OperationalError:
             pass
 
 
