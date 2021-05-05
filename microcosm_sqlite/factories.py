@@ -12,7 +12,6 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql import Selectable
 
 
-
 def on_connect_listener(use_foreign_keys):
     def on_connect(dbapi_connection, _):
         if use_foreign_keys:
