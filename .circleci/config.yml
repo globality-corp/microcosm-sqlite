@@ -233,9 +233,10 @@ workflows:
           context:
             - Globality-Common
           requires:
-            - test
-            - lint
-            - typehinting
+#            - test
+#            - lint
+#            - typehinting
+            - checkout
           filters:
             branches:
               ignore: /.*/
