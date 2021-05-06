@@ -43,7 +43,7 @@ whitelist: &whitelist
   paths:
     .
 
-version: 2
+version: 2.1
 
 jobs:
   checkout:
