@@ -182,8 +182,6 @@ jobs:
             twine upload --repository pypi dist/microcosm-sqlite-${version}.tar.gz
 
 workflows:
-  version: 2
-
   build-and-release:
     jobs:
       - checkout:
@@ -233,10 +231,9 @@ workflows:
           context:
             - Globality-Common
           requires:
-#            - test
-#            - lint
-#            - typehinting
-            - checkout
+            - test
+            - lint
+            - typehinting
           filters:
             branches:
               ignore: /.*/

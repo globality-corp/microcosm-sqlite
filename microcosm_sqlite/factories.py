@@ -26,7 +26,8 @@ def on_connect_listener(use_foreign_keys):
 
 
 def on_begin_listener(connection):
-    connection.execute("BEGIN")
+    # connection.execute("BEGIN")
+    pass
 
 
 def on_before_execute(conn, clauseelement, multiparams, params):
