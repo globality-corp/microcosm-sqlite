@@ -104,11 +104,10 @@ ENTRYPOINT ["./entrypoint.sh"]
 # the distribution properly. We also save build arguments to the image using
 # microcosm-compatible environment variables.
 
-LABEL microcosm.postgres=true
 
 ARG BUILD_NUM
 ARG SHA1
 ENV MICROCOSM_SQLITE__BUILD_INFO_CONVENTION__BUILD_NUM ${BUILD_NUM}
 ENV MICROCOSM_SQLITE__BUILD_INFO_CONVENTION__SHA1 ${SHA1}
 COPY $NAME /src/$NAME/
-RUN pip install --no-cache-dir --extra-index-url $EXTRA_INDEX_URL -e .[encryption]
+RUN pip install --no-cache-dir --extra-index-url $EXTRA_INDEX_URL -e .

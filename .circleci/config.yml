@@ -10,11 +10,12 @@
 #  See: http://github.com/globality-corp/globality-build
 #
 #
+version: 2.1
 
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: ${AWS_ECR_DOMAIN}/globality-build:2020.51.0
+    - image: ${AWS_ECR_DOMAIN}/globality-build:2021.19.1
       aws_auth:
         aws_access_key_id: ${AWS_ACCESS_KEY_ID}
         aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
@@ -22,13 +23,14 @@ defaults: &defaults
         EXTRA_INDEX_URL: "InjectedDuringRuntime"
         AWS_ECR_DOMAIN: "InjectedDuringRuntime"
         JFROG_AUTH: "InjectedDuringRuntime"
+        PYPI_AUTH_TOKEN: "InjectedDuringRuntime"
         PYPI_USERNAME: "InjectedDuringRuntime"
         PYPI_PASSWORD: "InjectedDuringRuntime"
 
 deploy_defaults: &deploy_defaults
   working_directory: ~/repo
   docker:
-    - image: ${AWS_ECR_DOMAIN}/globality-build:2020.51.0
+    - image: ${AWS_ECR_DOMAIN}/globality-build:2021.19.1
       aws_auth:
         aws_access_key_id: ${AWS_ACCESS_KEY_ID}
         aws_secret_access_key: ${AWS_SECRET_ACCESS_KEY}
@@ -36,14 +38,14 @@ deploy_defaults: &deploy_defaults
         EXTRA_INDEX_URL: "InjectedDuringRuntime"
         AWS_ECR_DOMAIN: "InjectedDuringRuntime"
         JFROG_AUTH: "InjectedDuringRuntime"
+        PYPI_AUTH_TOKEN: "InjectedDuringRuntime"
         PYPI_USERNAME: "InjectedDuringRuntime"
         PYPI_PASSWORD: "InjectedDuringRuntime"
+
 
 whitelist: &whitelist
   paths:
     .
-
-version: 2.1
 
 jobs:
   checkout:
@@ -56,7 +58,7 @@ jobs:
           root: ~/repo
           <<: *whitelist
 
-  build_base_docker:
+  build_docker:
     <<: *defaults
 
     steps:
@@ -70,7 +72,7 @@ jobs:
       - run:
           name: Login AWS ECR
           command: |
-            eval $(aws ecr get-login --no-include-email)
+            aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ECR_DOMAIN}
       - run:
           name: Build Docker - Application Service Code
           command: |
@@ -93,15 +95,31 @@ jobs:
       - attach_workspace:
           at: ~/repo
 
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.12
+          docker_layer_caching: true
+
       - run:
-          name: Test code
+          name: Login AWS ECR
           command: |
-            docker create -v /src/microcosm_sqlite/tests/ --name service_tests alpine:3.4 /bin/true
+            aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ECR_DOMAIN}
+
+
+      - run:
+          name: Copy service tests to volume
+          command: |
+
+            docker create -v /src/microcosm_sqlite/tests/ --name service_tests alpine:3.11 /bin/true
             docker cp $(pwd)/microcosm_sqlite/tests service_tests:/src/microcosm_sqlite/
-            eval $(aws ecr get-login --no-include-email)
-            docker pull ${AWS_ECR_DOMAIN}/python-library:${CIRCLE_SHA1}
+
+      - run:
+          name: Run Test
+          command: |
             docker run -it  --volumes-from service_tests ${AWS_ECR_DOMAIN}/python-library:${CIRCLE_SHA1} test
+
+
+
+
   lint:
     <<: *defaults
 
@@ -109,16 +127,28 @@ jobs:
       - attach_workspace:
           at: ~/repo
 
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.12
+          docker_layer_caching: true
+
+      - run:
+          name: Login AWS ECR
+          command: |
+            aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ECR_DOMAIN}
+
+      - run:
+          name: Copy service tests to volume
+          command: |
+
+            docker create -v /src/microcosm_sqlite/tests/ --name service_tests alpine:3.11 /bin/true
+            docker cp $(pwd)/microcosm_sqlite/tests service_tests:/src/microcosm_sqlite/
 
       - run:
           name: Run Lint
           command: |
-            docker create -v /src/microcosm_sqlite/tests/ --name service_tests alpine:3.4 /bin/true
-            docker cp $(pwd)/microcosm_sqlite/tests service_tests:/src/microcosm_sqlite/
-            eval $(aws ecr get-login --no-include-email)
-            docker pull ${AWS_ECR_DOMAIN}/python-library:${CIRCLE_SHA1}
             docker run -it --volumes-from service_tests ${AWS_ECR_DOMAIN}/python-library:${CIRCLE_SHA1} lint
+
+
 
   typehinting:
     <<: *defaults
@@ -127,37 +157,37 @@ jobs:
       - attach_workspace:
           at: ~/repo
 
-      - setup_remote_docker
+      - setup_remote_docker:
+          version: 19.03.12
+          docker_layer_caching: true
+
+      - run:
+          name: Login AWS ECR
+          command: |
+            aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ECR_DOMAIN}
+
+      - run:
+          name: Copy service tests to volume
+          command: |
+
+            docker create -v /src/microcosm_sqlite/tests/ --name service_tests alpine:3.11 /bin/true
+            docker cp $(pwd)/microcosm_sqlite/tests service_tests:/src/microcosm_sqlite/
 
       - run:
           name: Run Typehinting
           command: |
-            docker create -v /src/microcosm_sqlite/tests/ --name service_tests alpine:3.4 /bin/true
-            docker cp $(pwd)/microcosm_sqlite/tests service_tests:/src/microcosm_sqlite/
-            eval $(aws ecr get-login --no-include-email)
-            docker pull ${AWS_ECR_DOMAIN}/python-library:${CIRCLE_SHA1}
             docker run -it --volumes-from service_tests ${AWS_ECR_DOMAIN}/python-library:${CIRCLE_SHA1} typehinting
-#  deploy_pypi:
-#    <<: *defaults
-#    steps:
-#      - attach_workspace:
-#          at: ~/repo
-#      - run:
-#          name: Deploy
-#          command: |
-#            echo "[distutils]" > ~/.pypirc
-#            echo "index-servers =" >> ~/.pypirc
-#            echo "    pypi " >> ~/.pypirc
-#            echo >> ~/.pypirc
-#            echo "[pypi]" >> ~/.pypirc
-#            echo "repository:https://upload.pypi.org/legacy/" >> ~/.pypirc
-#            echo "username:$PYPI_USERNAME" >> ~/.pypirc
-#            echo "password:$PYPI_PASSWORD" >> ~/.pypirc
-#            echo >> ~/.pypirc
-#            version=$(cat .bumpversion.cfg | awk '/current_version / {print $3}')
-#            python setup.py register -r pypi
-#            python setup.py sdist
-#            twine upload --repository pypi dist/microcosm-sqlite-${version}.tar.gz
+
+
+  deploy_jfrog_rc:
+    <<: *defaults
+    steps:
+      - attach_workspace:
+          at: ~/repo
+      - run:
+          name: Deploy
+          command: |
+            echo "Not publishing package!"
 
   publish_library:
     <<: *defaults
@@ -172,7 +202,7 @@ jobs:
             echo "    pypi " >> ~/.pypirc
             echo >> ~/.pypirc
             echo "[pypi]" >> ~/.pypirc
-            echo "repository:https://upload.pypi.org/legacy/" >> ~/.pypirc
+            echo "repository = https://upload.pypi.org/legacy/" >> ~/.pypirc
             echo "username = __token__" >> ~/.pypirc
             echo "password = ${PYPI_AUTH_TOKEN}" >> ~/.pypirc
             echo >> ~/.pypirc
@@ -181,19 +211,21 @@ jobs:
             python setup.py sdist
             twine upload --repository pypi dist/microcosm-sqlite-${version}.tar.gz
 
+
 workflows:
+
   build-and-release:
     jobs:
       - checkout:
-          context:
-            - Globality-Common
+          context: 
+          - Globality-Common
           filters:
             # run for all branches and tags
             tags:
               only: /.*/
-      - build_base_docker:
-          context:
-            - Globality-Common
+      - build_docker:
+          context: 
+          - Globality-Common
           requires:
             - checkout
           filters:
@@ -201,35 +233,42 @@ workflows:
             tags:
               only: /.*/
       - lint:
-          context:
-            - Globality-Common
+          context: 
+          - Globality-Common
           requires:
-            - build_base_docker
+            - build_docker
           filters:
             # run for all branches and tags
             tags:
               only: /.*/
       - test:
-          context:
-            - Globality-Common
+          context: 
+          - Globality-Common
           requires:
-            - build_base_docker
+            - build_docker
           filters:
             # run for all branches and tags
             tags:
               only: /.*/
-      - typehinting:
-          context:
-            - Globality-Common
+      - deploy_jfrog_rc:
+          context: 
+          - Globality-Common
           requires:
-            - build_base_docker
+            - test
+            - lint
+            - typehinting
+      - typehinting:
+          context: 
+          - Globality-Common
+          requires:
+            - build_docker
           filters:
             # run for all branches and tags
             tags:
               only: /.*/
       - publish_library:
-          context:
-            - Globality-Common
+          context: 
+          - Globality-Common
           requires:
             - test
             - lint
