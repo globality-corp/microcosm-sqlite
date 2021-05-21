@@ -2,16 +2,16 @@ from tempfile import NamedTemporaryFile
 from typing import Any
 from unittest.mock import patch
 
+from microcosm.api import create_object_graph
+from microcosm.loaders import load_from_dict
+from sqlalchemy import Column, ForeignKey, Integer
+
 from hamcrest import (
     assert_that,
     contains,
     equal_to,
     is_,
 )
-from microcosm.api import create_object_graph
-from microcosm.loaders import load_from_dict
-from sqlalchemy import Column, ForeignKey, Integer
-
 from microcosm_sqlite import DataSet, Store, dispose_sqlite_connections
 
 

@@ -2,6 +2,8 @@
 Test stores with fixtures.
 
 """
+from microcosm.api import create_object_graph
+
 from hamcrest import (
     assert_that,
     calling,
@@ -12,8 +14,6 @@ from hamcrest import (
     none,
     raises,
 )
-from microcosm.api import create_object_graph
-
 from microcosm_sqlite.errors import (
     DuplicateModelError,
     ModelIntegrityError,

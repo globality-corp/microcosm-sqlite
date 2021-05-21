@@ -1,9 +1,9 @@
 from tempfile import NamedTemporaryFile
 
-from hamcrest import assert_that, calling, raises
 from microcosm.api import create_object_graph
 from microcosm.loaders import load_from_dict
 
+from hamcrest import assert_that, calling, raises
 from microcosm_sqlite.context import SessionContext
 from microcosm_sqlite.errors import ModelIntegrityError
 from microcosm_sqlite.tests.fixtures import Dog, DogStore, Example
