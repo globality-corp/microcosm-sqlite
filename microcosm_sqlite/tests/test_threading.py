@@ -5,10 +5,10 @@ Threading tests.
 from multiprocessing.pool import ThreadPool
 from tempfile import NamedTemporaryFile
 
-from hamcrest import assert_that, contains
 from microcosm.api import create_object_graph
 from microcosm.loaders import load_from_dict
 
+from hamcrest import assert_that, contains
 from microcosm_sqlite.context import SessionContext
 from microcosm_sqlite.stores import GetOrCreateSession
 from microcosm_sqlite.tests.fixtures import Example, Person, PersonStore
