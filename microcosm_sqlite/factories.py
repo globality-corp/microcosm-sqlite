@@ -33,6 +33,7 @@ def on_begin_listener(connection):
     paths=dict(),
     use_foreign_keys="True",
     autocommit=False,
+    read_only=False
 )
 class SQLiteBindFactory:
     """
@@ -51,6 +52,7 @@ class SQLiteBindFactory:
             for entry_point in iter_entry_points("microcosm.sqlite")
         }
         self.paths.update(graph.config.sqlite.paths)
+        self.read_only = graph.config.sqlite.read_only
 
     def __getitem__(self, key):
         return self.paths[key]
@@ -70,7 +72,9 @@ class SQLiteBindFactory:
             engine = create_engine(f"sqlite:///{path}", echo=self.echo)
 
             event.listen(engine, "connect", on_connect_listener(self.use_foreign_keys))
-            event.listen(engine, "begin", on_begin_listener)
+            if not self.read_only:
+                # We only need to use transactions if we're not in read_only mode
+                event.listen(engine, "begin", on_begin_listener)
 
             Session = sessionmaker(bind=engine, autocommit=self.autocommit)
 
