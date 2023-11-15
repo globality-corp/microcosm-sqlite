@@ -2,6 +2,7 @@
 Session context.
 
 """
+from sqlalchemy import text
 
 
 class SessionContext:
@@ -9,6 +10,7 @@ class SessionContext:
     A context manager for a shared session between subclasses of a DataSet.
 
     """
+
     def __init__(
         self,
         graph,
@@ -57,7 +59,7 @@ class SessionContext:
             session = self.session
             if session:
                 session.execute(
-                    "PRAGMA defer_foreign_keys=ON",
+                    text("PRAGMA defer_foreign_keys=ON"),
                 )
 
         return context
@@ -67,7 +69,7 @@ class SessionContext:
             session = self.session
             if session:
                 session.execute(
-                    "PRAGMA defer_foreign_keys=OFF",
+                    text("PRAGMA defer_foreign_keys=OFF"),
                 )
 
         self.close()
