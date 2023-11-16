@@ -2,8 +2,9 @@
 Dump SQLite databases to file.
 
 """
-from microcosm_sqlite.dumpers.csv import CSVDumper
 from microcosm.api import binding
+
+from microcosm_sqlite.dumpers.csv import CSVDumper
 
 
 @binding("sqlite_dumper")

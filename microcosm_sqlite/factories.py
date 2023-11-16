@@ -5,7 +5,7 @@ SQLite factories.
 from distutils.util import strtobool
 from pkg_resources import iter_entry_points
 
-from microcosm.api import defaults, binding
+from microcosm.api import binding, defaults
 from sqlalchemy import create_engine, event, text
 from sqlalchemy.orm import sessionmaker
 

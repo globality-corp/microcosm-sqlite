@@ -4,7 +4,7 @@ CSV-based building.
 """
 from csv import DictReader
 
-from sqlalchemy.sql.expression import delete, text
+from sqlalchemy.sql.expression import delete
 
 
 class CSVBuilder:
