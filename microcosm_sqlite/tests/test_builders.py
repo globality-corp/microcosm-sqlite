@@ -6,9 +6,6 @@ from io import StringIO
 from tempfile import NamedTemporaryFile
 from textwrap import dedent
 
-from microcosm.api import create_object_graph
-from microcosm.loaders import load_from_dict
-
 from hamcrest import (
     assert_that,
     contains,
@@ -16,6 +13,9 @@ from hamcrest import (
     has_properties,
     is_,
 )
+from microcosm.api import create_object_graph
+from microcosm.loaders import load_from_dict
+
 from microcosm_sqlite.tests.fixtures import (
     Dog,
     DogStore,
