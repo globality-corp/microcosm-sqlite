@@ -39,7 +39,7 @@ setup(
     },
     extras_require={
         "lint": [
-            "isort<5",
+            "isort>5",
         ],
         "test": [
             "coverage>=3.7.1",
