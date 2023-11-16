@@ -13,6 +13,7 @@ class CSVBuilder:
     and multi model class (bulk mode).
 
     """
+
     def __init__(
         self,
         graph,
@@ -46,7 +47,7 @@ class CSVBuilder:
         # NB not using store, as for some models, e.g. the ones
         # resulting from a mixins, we don't have a store.
         return session.execute(
-            delete(text(model_class.__tablename__)),
+            delete(model_class.__tablename__),
         )
 
     def _build(self, fileobj):
@@ -94,18 +95,11 @@ class CSVBuilder:
         row_dict = self.defaults.copy()
         row_dict.update(row)
 
-        return model_cls(**dict(
-            self.as_tuple(columns, name, value)
-            for name, value in row_dict.items()
-            if name in columns
-        ))
+        return model_cls(**dict(self.as_tuple(columns, name, value) for name, value in row_dict.items() if name in columns))
 
     @staticmethod
     def get_columns(model_cls):
-        return {
-            column.name: (key, column)
-            for key, column in model_cls.__mapper__.columns.items()
-        }
+        return {column.name: (key, column) for key, column in model_cls.__mapper__.columns.items()}
 
     @staticmethod
     def as_tuple(columns, name, value):

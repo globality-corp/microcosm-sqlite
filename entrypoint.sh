@@ -21,7 +21,7 @@
 if [ "$1" = "test" ]; then
    # Install standard test dependencies; YMMV
    pip --quiet install \
-       .[test] pytest PyHamcrest coverage
+       .[test] pytest-cov pytest PyHamcrest coverage
    exec pytest
 elif [ "$1" = "lint" ]; then
    # Install standard linting dependencies; YMMV
@@ -30,7 +30,7 @@ elif [ "$1" = "lint" ]; then
    ruff ${NAME}
 elif [ "$1" = "typehinting" ]; then
    # Install standard type-linting dependencies
-   pip --quiet install mypy
+   pip --quiet install mypy types-setuptools
    mypy ${NAME} --ignore-missing-imports
 else
    echo "Cannot execute $@"

@@ -112,14 +112,14 @@ class TestStore:
         assert_that(self.store.first(offset=1, limit=1), is_(equal_to(self.gw)))
 
     def test_one(self):
-        assert_that(
+        assert_that(  # type: ignore
             calling(self.store.one),
             raises(ModelNotFoundError),
         )
 
         self.populate()
 
-        assert_that(
+        assert_that(  # type: ignore
             calling(self.store.one),
             raises(MultipleModelsFoundError),
         )

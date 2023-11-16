@@ -61,11 +61,6 @@ lines-after-imports = 2
 [tool.ruff.flake8-quotes]
 docstring-quotes = "double"
 
-[project.scripts]
-sqlite = "microcosm_sqlite.factories:SQLiteBindFactory"
-sqlite_builder = "microcosm_sqlite.builders:SQLiteBuilder"
-sqlite_dumper = "microcosm_sqlite.dumpers:SQLiteDumper"
-
 [options.extras_require]
 lint = "isort>5; ruff>=0.1.4"
 test = "coverage>=3.7.1; PyHamcrest>=1.8.5"

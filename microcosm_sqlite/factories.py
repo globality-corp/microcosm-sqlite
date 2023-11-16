@@ -5,7 +5,7 @@ SQLite factories.
 from distutils.util import strtobool
 from pkg_resources import iter_entry_points
 
-from microcosm.api import defaults
+from microcosm.api import defaults, binding
 from sqlalchemy import create_engine, event, text
 from sqlalchemy.orm import sessionmaker
 
@@ -27,6 +27,7 @@ def on_begin_listener(connection):
     connection.execute(text("BEGIN"))
 
 
+@binding("sqlite")
 @defaults(
     echo="False",
     path=":memory:",
@@ -48,10 +49,7 @@ class SQLiteBindFactory:
         self.autocommit = graph.config.sqlite.autocommit
 
         self.datasets = dict()
-        self.paths = {
-            entry_point.name: entry_point.load()(graph)
-            for entry_point in iter_entry_points("microcosm.sqlite")
-        }
+        self.paths = {entry_point.name: entry_point.load()(graph) for entry_point in iter_entry_points("microcosm.sqlite")}
         self.paths.update(graph.config.sqlite.paths)
         self.read_only = graph.config.sqlite.read_only
 

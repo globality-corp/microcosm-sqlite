@@ -3,8 +3,10 @@ Build SQLite databases.
 
 """
 from microcosm_sqlite.builders.csv import CSVBuilder
+from microcosm.api import binding
 
 
+@binding("sqlite_builder")
 class SQLiteBuilder:
     """
     Top-level binding for SQLite database building.

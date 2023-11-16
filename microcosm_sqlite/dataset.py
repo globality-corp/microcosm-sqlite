@@ -18,6 +18,7 @@ class DataSet:
     All derived types will use the same engine and session maker.
 
     """
+
     @staticmethod
     def create(name, cls=None, **kwargs):
         """
@@ -62,7 +63,7 @@ class DataSet:
         """
         name = cls.resolve().__name__
         engine, _ = graph.sqlite(name)
-        cls.metadata.create_all(bind=engine)
+        cls.metadata.create_all(bind=engine)  # type: ignore
 
     @classmethod
     def drop_all(cls, graph):
@@ -75,7 +76,7 @@ class DataSet:
         """
         name = cls.resolve().__name__
         engine, _ = graph.sqlite(name)
-        cls.metadata.drop_all(bind=engine)
+        cls.metadata.drop_all(bind=engine)  # type: ignore
 
     @classmethod
     def recreate_all(cls, graph):
@@ -102,11 +103,7 @@ class DataSet:
         Create a new session context.
 
         """
-        return SessionContext(
-            graph=graph,
-            data_set=cls.resolve(),
-            **kwargs
-        )
+        return SessionContext(graph=graph, data_set=cls.resolve(), **kwargs)
 
     @classmethod
     def dispose(cls, graph):
@@ -138,13 +135,13 @@ def dispose_sqlite_connections(graph):
         if session is not None:
             session.close()
 
-        data_set.session = None
+        data_set.session = None  # type: ignore
 
         # NB cleanup thread-local session container (initialized in
         # microcosm_sqlite.stores.GetOrCreateSession), to make sure
         # we initialize new one in the child process.
         try:
-            del data_set.local
+            del data_set.local  # type: ignore
         except AttributeError:
             pass
 
