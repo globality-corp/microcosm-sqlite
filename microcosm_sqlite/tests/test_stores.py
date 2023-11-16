@@ -2,8 +2,6 @@
 Test stores with fixtures.
 
 """
-from microcosm.api import create_object_graph
-
 from hamcrest import (
     assert_that,
     calling,
@@ -14,6 +12,8 @@ from hamcrest import (
     none,
     raises,
 )
+from microcosm.api import create_object_graph
+
 from microcosm_sqlite.errors import (
     DuplicateModelError,
     ModelIntegrityError,
@@ -112,14 +112,14 @@ class TestStore:
         assert_that(self.store.first(offset=1, limit=1), is_(equal_to(self.gw)))
 
     def test_one(self):
-        assert_that(
+        assert_that(  # type: ignore
             calling(self.store.one),
             raises(ModelNotFoundError),
         )
 
         self.populate()
 
-        assert_that(
+        assert_that(  # type: ignore
             calling(self.store.one),
             raises(MultipleModelsFoundError),
         )

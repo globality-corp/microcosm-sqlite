@@ -3,10 +3,10 @@ SQLite factories.
 
 """
 from distutils.util import strtobool
-
-from microcosm.api import defaults
 from pkg_resources import iter_entry_points
-from sqlalchemy import create_engine, event
+
+from microcosm.api import binding, defaults
+from sqlalchemy import create_engine, event, text
 from sqlalchemy.orm import sessionmaker
 
 
@@ -24,22 +24,24 @@ def on_connect_listener(use_foreign_keys):
 
 
 def on_begin_listener(connection):
-    connection.execute("BEGIN")
+    connection.execute(text("BEGIN"))
 
 
+@binding("sqlite")
 @defaults(
     echo="False",
     path=":memory:",
     paths=dict(),
     use_foreign_keys="True",
     autocommit=False,
-    read_only=False
+    read_only=False,
 )
 class SQLiteBindFactory:
     """
     A factory for SQLite engines and sessionmakers based on a name.
 
     """
+
     def __init__(self, graph):
         self.default_path = graph.config.sqlite.path
         self.echo = strtobool(graph.config.sqlite.echo)
@@ -47,10 +49,7 @@ class SQLiteBindFactory:
         self.autocommit = graph.config.sqlite.autocommit
 
         self.datasets = dict()
-        self.paths = {
-            entry_point.name: entry_point.load()(graph)
-            for entry_point in iter_entry_points("microcosm.sqlite")
-        }
+        self.paths = {entry_point.name: entry_point.load()(graph) for entry_point in iter_entry_points("microcosm.sqlite")}
         self.paths.update(graph.config.sqlite.paths)
         self.read_only = graph.config.sqlite.read_only
 

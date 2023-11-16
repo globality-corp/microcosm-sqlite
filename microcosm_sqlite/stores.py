@@ -5,7 +5,7 @@ Persistence abstractions.
 from abc import ABCMeta, abstractmethod
 from contextlib import contextmanager
 from threading import local
-from typing import Optional
+from typing import ClassVar
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
@@ -32,7 +32,6 @@ def get_session(store):
 
 
 class GetOrCreateSession:
-
     def __init__(self, graph, expire_on_commit=False):
         graph.use("sqlite")
         self.graph = graph
@@ -80,16 +79,12 @@ class Store(metaclass=ABCMeta):
     A persistence layer for SQLite-backed models.
 
     """
-    auto_filter_fields: Optional[list] = None
+
+    auto_filter_fields: ClassVar[list | None] = None
 
     def __init__(self, get_session=get_session):
         self.get_session = get_session
-        self.auto_filters = {
-            auto_filter_field.name: auto_filter_field
-            for auto_filter_field in (
-                self.auto_filter_fields or []
-            )
-        }
+        self.auto_filters = {auto_filter_field.name: auto_filter_field for auto_filter_field in (self.auto_filter_fields or [])}
 
     @property
     @abstractmethod
