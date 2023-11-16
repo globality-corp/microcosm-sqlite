@@ -5,10 +5,10 @@ Test database building.
 from io import StringIO
 from tempfile import NamedTemporaryFile
 
-from hamcrest import assert_that, equal_to
 from microcosm.api import create_object_graph
 from microcosm.loaders import load_from_dict
 
+from hamcrest import assert_that, equal_to
 from microcosm_sqlite.tests.fixtures import Example, Person, PersonStore
 
 
