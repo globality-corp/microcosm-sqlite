@@ -1,0 +1,90 @@
+[build-system]
+requires = ["setuptools>=61.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "microcosm-sqlite"
+version = "0.27.0"
+authors = [{name = "Globality Engineering", email = "engineering@globality.com"}]
+description = "Opinionated persistence with SQLite"
+keywords = ["microcosm"]
+dependencies = [
+    "SQLAlchemy-Utils>=0.33.3",
+    "SQLAlchemy>=2.0.0",
+    "alembic>=1.0.11",
+    "microcosm>=3.2.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/globality-corp/microcosm-sqlite"
+
+[options]
+include_package_data = true
+python_requires = ">=3.11"
+
+[tool.mypy]
+ignore_missing_imports = true
+# Display the codes needed for # type: ignore[code] annotations.
+show_error_codes = true
+check_untyped_defs = true
+
+[options.packages.find]
+exclude = "*.tests; *.tests.*; tests.*; tests"
+
+[tool.ruff]
+select = [
+    "I",  # isort
+    "E",  # pycodestyle
+    "F",  # pyflakes
+    "UP", # pyupgrade
+    "T20", # flake8-print
+    "Q",  # flake8-quotes
+    "RUF", # ruff-specific
+]
+line-length = 130
+target-version = "py310"
+extend-exclude = [
+    "*/migrations/*",
+    ".eggs/",
+]
+unfixable = ["E712"]
+
+[tool.ruff.mccabe]
+max-complexity = 15
+
+[tool.ruff.isort]
+combine-as-imports = true
+known-first-party = ["miranda"]
+extra-standard-library = ["pkg_resources"]
+lines-after-imports = 2
+
+[tool.ruff.flake8-quotes]
+docstring-quotes = "double"
+
+[project.scripts]
+sqlite = "microcosm_sqlite.factories:SQLiteBindFactory"
+sqlite_builder = "microcosm_sqlite.builders:SQLiteBuilder"
+sqlite_dumper = "microcosm_sqlite.dumpers:SQLiteDumper"
+
+[options.extras_require]
+lint = "isort>5; ruff>=0.1.4"
+test = "coverage>=3.7.1; PyHamcrest>=1.8.5"
+
+[tool.pytest.ini_options]
+addopts = """--cov microcosm_sqlite
+             --cov-report xml:microcosm_sqlite/tests/coverage/cov.xml
+             --junitxml=microcosm_sqlite/tests/test-results/pytest/junit.xml"""
+
+[tools.coverage.report]
+show_missing = true
+exclude_lines = [
+    # Don't complain about missing debug-only code:
+    "def __repr__",
+    "if self.debug",
+
+    # Don't complain if tests don't hit defensive assertion code:
+    "raise AssertionError",
+    "raise NotImplementedError",
+    # Ignore type check code blocks
+    "if TYPE_CHECKING",
+]

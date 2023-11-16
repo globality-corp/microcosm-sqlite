@@ -33,7 +33,7 @@ class CSVDumper:
         writer = DictWriter(
             fileobj,
             fieldnames=field_names or self.get_columns(),
-            extrasaction=extras_action or 'raise',  # raise is the default
+            extrasaction=extras_action or "raise",  # raise is the default
         )
 
         if custom_header:

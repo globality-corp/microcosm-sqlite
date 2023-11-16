@@ -2,7 +2,7 @@
 Test fixture.
 
 """
-from typing import Any
+from typing import Any, ClassVar
 
 from sqlalchemy import (
     Boolean,
@@ -64,7 +64,7 @@ class Dog(IdentityMixin, Example):
 
 class PersonStore(Store):
     model_class = Person
-    auto_filter_fields = [
+    auto_filter_fields: ClassVar = [
         model_class.first,
     ]
 

@@ -4,7 +4,7 @@ Model mixins.
 """
 
 
-class IdentityMixin():
+class IdentityMixin:
     """
     Mixing for identity-based equality.
 

@@ -58,10 +58,10 @@ def process_revision_directives(context, revision, directives):
     script = directives[0]
 
     if script.upgrade_ops.ops:
-        raise StaleDBError(f"Unexpected upgrade_ops {repr(script.upgrade_ops.ops)}")
+        raise StaleDBError(f"Unexpected upgrade_ops {script.upgrade_ops.ops!r}")
 
     if script.downgrade_ops.ops:
-        raise StaleDBError(f"Unexpected downgrade_ops {repr(script.downgrade_ops.ops)}")
+        raise StaleDBError(f"Unexpected downgrade_ops {script.downgrade_ops.ops!r}")
 
 
 def main(graph, Base):
