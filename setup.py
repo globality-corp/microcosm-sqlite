@@ -23,7 +23,7 @@ setup(
         "SQLAlchemy-Utils>=0.33.3",
         "SQLAlchemy>=2.0.0",
         "alembic>=1.0.11",
-        "microcosm>=3.20.0",
+        "microcosm>=3.2.0",
     ],
     setup_requires=[
         "nose>=1.3.6",
