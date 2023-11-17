@@ -5,9 +5,17 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "microcosm-sqlite"
 version = "1.0.0"
+readme = "README.md"
+license = {file = "LICENSE"}
+requires-python = ">=3.11"
 authors = [{name = "Globality Engineering", email = "engineering@globality.com"}]
 description = "Opinionated persistence with SQLite"
-keywords = ["microcosm"]
+keywords = ["microcosm", "sqlite"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+]
 dependencies = [
     "SQLAlchemy-Utils>=0.33.3",
     "SQLAlchemy>=2.0.0",
@@ -17,10 +25,6 @@ dependencies = [
 
 [project.urls]
 Homepage = "https://github.com/globality-corp/microcosm-sqlite"
-
-[options]
-include_package_data = true
-python_requires = ">=3.11"
 
 [tool.mypy]
 ignore_missing_imports = true
@@ -61,9 +65,9 @@ lines-after-imports = 2
 [tool.ruff.flake8-quotes]
 docstring-quotes = "double"
 
-[options.extras_require]
-lint = "isort>5; ruff>=0.1.4"
-test = "coverage>=3.7.1; PyHamcrest>=1.8.5"
+[project.optional-dependencies]
+lint = ["isort>5", "ruff>=0.1.4"]
+test = ["coverage>=3.7.1", "PyHamcrest>=1.8.5"]
 
 [tool.pytest.ini_options]
 addopts = """--cov microcosm_sqlite
@@ -83,4 +87,11 @@ exclude_lines = [
     # Ignore type check code blocks
     "if TYPE_CHECKING",
 ]
+
+[tool.setuptools]
+packages = ["microcosm_sqlite"]
+
+[tool.setuptools.dynamic]
+version = {attr = "microcosm_sqlite.VERSION"}
+readme = {file = ["README.md"]}
 
