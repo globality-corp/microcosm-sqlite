@@ -78,7 +78,7 @@ ENV LC_ALL en_US.UTF-8
 # when source code changes.
 
 # copy pyproject.toml and HISTORY.rst only if they exist
-COPY README.md MANIFEST.in setup.cfg pyproject.tom[l] HISTORY.rs[t] conftest.p[y] /src/
+COPY README.md MANIFEST.in LICENSE setup.cfg pyproject.tom[l] HISTORY.rs[t] conftest.p[y] /src/
 
 RUN pip install --no-cache-dir --upgrade --extra-index-url ${EXTRA_INDEX_URL} /src/ && \
     apt-get remove --purge -y ${BUILD_PACKAGES} && \
