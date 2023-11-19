@@ -209,7 +209,7 @@ jobs:
             version=$(cat .bumpversion.cfg | awk '/current_version / {print $3}')
             pip3 install build 
             python3 -m build
-            twine upload --repository pypi dist/microcosm-sqlite-${version}.tar.gz
+            twine upload --verbose dist/microcosm-sqlite-${version}.tar.gz
 
 
 workflows:
