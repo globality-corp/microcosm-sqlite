@@ -26,6 +26,10 @@ dependencies = [
 [project.urls]
 Homepage = "https://github.com/globality-corp/microcosm-sqlite"
 
+[options]
+include_package_data = true
+python_requires = ">=3.11"
+
 [tool.mypy]
 ignore_missing_imports = true
 # Display the codes needed for # type: ignore[code] annotations.
