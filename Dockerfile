@@ -78,10 +78,13 @@ ENV LC_ALL en_US.UTF-8
 # when source code changes.
 
 # copy pyproject.toml and HISTORY.rst only if they exist
-COPY README.md MANIFEST.in LICENSE setup.cfg pyproject.tom[l] HISTORY.rs[t] conftest.p[y] /src/
+COPY README.md MANIFEST.in pyproject.tom[l] HISTORY.rs[t] conftest.p[y] /src/
 
-RUN pip install --no-cache-dir --upgrade --extra-index-url ${EXTRA_INDEX_URL} /src/ && \
-    apt-get remove --purge -y ${BUILD_PACKAGES} && \
+COPY microcosm_sqlite /src/microcosm_sqlite/
+
+RUN ls /src/
+RUN pip install --no-cache-dir --upgrade --extra-index-url ${EXTRA_INDEX_URL} -e /src/
+RUN apt-get remove --purge -y ${BUILD_PACKAGES} && \
     apt-get autoremove -y && \
     rm -rf /var/lib/apt/lists/*
 
