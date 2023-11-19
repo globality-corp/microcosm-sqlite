@@ -207,7 +207,7 @@ jobs:
             echo "password = ${PYPI_AUTH_TOKEN}" >> ~/.pypirc
             echo >> ~/.pypirc
             version=$(cat .bumpversion.cfg | awk '/current_version / {print $3}')
-            python3 -m build
+            python -m build
             twine upload --repository pypi dist/microcosm-sqlite-${version}.tar.gz
 
 
