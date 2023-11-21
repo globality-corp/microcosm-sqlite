@@ -7,7 +7,7 @@ name = "microcosm-sqlite"
 version = "1.0.7"
 readme = "README.md"
 license = {file = "LICENSE"}
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 authors = [{name = "Globality Engineering", email = "engineering@globality.com"}]
 description = "Opinionated persistence with SQLite"
 keywords = ["microcosm", "sqlite"]
