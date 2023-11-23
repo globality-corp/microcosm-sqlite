@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "microcosm-sqlite"
-version = "1.0.9"
+version = "1.0.10"
 readme = "README.md"
 license = {file = "LICENSE"}
 requires-python = ">=3.10"
@@ -93,7 +93,7 @@ exclude_lines = [
 ]
 
 [tool.setuptools]
-packages = ["microcosm_sqlite", "microcosm_sqlite.builders", "microcosm_sqlite.dumpers"]
+packages = ["microcosm_sqlite", "microcosm_sqlite.builders", "microcosm_sqlite.dumpers", "microcosm_sqlite.cmd"]
 
 [tool.setuptools.dynamic]
 version = {attr = "microcosm_sqlite.VERSION"}
