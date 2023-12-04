@@ -8,7 +8,7 @@ from pkg_resources import iter_entry_points
 from microcosm.api import binding, defaults
 from sqlalchemy import create_engine, event, text
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import NullPool
+from sqlalchemy.pool import QueuePool, NullPool
 
 
 def on_connect_listener(use_foreign_keys):
@@ -35,7 +35,7 @@ def on_begin_listener(connection):
     paths=dict(),
     use_foreign_keys="True",
     read_only=False,
-    poolclass=NullPool,
+    poolclass=None,
 )
 class SQLiteBindFactory:
     """
@@ -55,7 +55,11 @@ class SQLiteBindFactory:
         }
         self.paths.update(graph.config.sqlite.paths)
         self.read_only = graph.config.sqlite.read_only
-        self.poolclass = graph.config.sqlite.poolclass
+        self.poolclass = graph.config.sqlite.poolclass or self._get_default_poolclass()
+
+    def _get_default_poolclass(self):
+        in_memory_db = self.default_path == ":memory:"
+        return QueuePool if in_memory_db else NullPool
 
     def __getitem__(self, key):
         return self.paths[key]
