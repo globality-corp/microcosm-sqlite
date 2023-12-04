@@ -8,7 +8,7 @@ from pkg_resources import iter_entry_points
 from microcosm.api import binding, defaults
 from sqlalchemy import create_engine, event, text
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.pool import QueuePool, NullPool
+from sqlalchemy.pool import NullPool, QueuePool
 
 
 def on_connect_listener(use_foreign_keys):
