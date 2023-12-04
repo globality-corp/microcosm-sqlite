@@ -8,6 +8,7 @@ from pkg_resources import iter_entry_points
 from microcosm.api import binding, defaults
 from sqlalchemy import create_engine, event, text
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import NullPool
 
 
 def on_connect_listener(use_foreign_keys):
@@ -34,6 +35,7 @@ def on_begin_listener(connection):
     paths=dict(),
     use_foreign_keys="True",
     read_only=False,
+    poolclass=NullPool,
 )
 class SQLiteBindFactory:
     """
@@ -47,9 +49,13 @@ class SQLiteBindFactory:
         self.use_foreign_keys = strtobool(graph.config.sqlite.use_foreign_keys)
 
         self.datasets = dict()
-        self.paths = {entry_point.name: entry_point.load()(graph) for entry_point in iter_entry_points("microcosm.sqlite")}
+        self.paths = {
+            entry_point.name: entry_point.load()(graph)
+            for entry_point in iter_entry_points("microcosm.sqlite")
+        }
         self.paths.update(graph.config.sqlite.paths)
         self.read_only = graph.config.sqlite.read_only
+        self.poolclass = graph.config.sqlite.poolclass
 
     def __getitem__(self, key):
         return self.paths[key]
@@ -66,7 +72,9 @@ class SQLiteBindFactory:
         """
         if name not in self.datasets:
             path = self.paths.get(name, self.default_path)
-            engine = create_engine(f"sqlite:///{path}", echo=self.echo)
+            engine = create_engine(
+                f"sqlite:///{path}", poolclass=self.poolclass, echo=self.echo
+            )
 
             event.listen(engine, "connect", on_connect_listener(self.use_foreign_keys))
             if not self.read_only:
