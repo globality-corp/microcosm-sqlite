@@ -5,7 +5,7 @@ Abstraction around a SQLite-based data set.
 from inspect import getmro
 
 from sqlalchemy import MetaData
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
 from microcosm_sqlite.constants import naming_convention
 from microcosm_sqlite.context import SessionContext

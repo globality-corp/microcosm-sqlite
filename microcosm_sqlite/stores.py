@@ -5,7 +5,6 @@ Persistence abstractions.
 from abc import ABCMeta, abstractmethod
 from contextlib import contextmanager
 from threading import local
-from typing import Optional
 
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm.exc import MultipleResultsFound, NoResultFound
@@ -80,7 +79,7 @@ class Store(metaclass=ABCMeta):
     A persistence layer for SQLite-backed models.
 
     """
-    auto_filter_fields: Optional[list] = None
+    auto_filter_fields: list | None = None
 
     def __init__(self, get_session=get_session):
         self.get_session = get_session

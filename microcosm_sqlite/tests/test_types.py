@@ -4,10 +4,10 @@ Test type conversion.
 """
 from typing import Any
 
+from hamcrest import assert_that, equal_to, is_
 from microcosm.api import create_object_graph
 from sqlalchemy import Column, Integer
 
-from hamcrest import assert_that, equal_to, is_
 from microcosm_sqlite import DataSet
 from microcosm_sqlite.models import IdentityMixin
 from microcosm_sqlite.types import Truthy

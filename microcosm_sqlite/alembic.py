@@ -190,5 +190,5 @@ def get_migrations_dir(graph, name):
     migrations_dir = Path(migrations_base_dir) / name
 
     if not migrations_dir.is_dir():
-        raise Exception("Migrations dir must exist: {}".format(migrations_dir))
+        raise Exception(f"Migrations dir must exist: {migrations_dir}")
     return str(migrations_dir)
