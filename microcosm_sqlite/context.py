@@ -2,6 +2,7 @@
 Session context.
 
 """
+from sqlalchemy import text
 
 
 class SessionContext:
@@ -57,7 +58,7 @@ class SessionContext:
             session = self.session
             if session:
                 session.execute(
-                    "PRAGMA defer_foreign_keys=ON",
+                    text("PRAGMA defer_foreign_keys=ON"),
                 )
 
         return context
@@ -67,7 +68,7 @@ class SessionContext:
             session = self.session
             if session:
                 session.execute(
-                    "PRAGMA defer_foreign_keys=OFF",
+                    text("PRAGMA defer_foreign_keys=OFF"),
                 )
 
         self.close()
