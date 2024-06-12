@@ -4,9 +4,6 @@ Test factory logic.
 """
 from tempfile import NamedTemporaryFile
 
-from microcosm.api import create_object_graph
-from microcosm.loaders import load_from_dict
-
 from hamcrest import (
     assert_that,
     calling,
@@ -16,11 +13,13 @@ from hamcrest import (
     is_not,
     raises,
 )
+from microcosm.api import create_object_graph
+from microcosm.loaders import load_from_dict
 
 
 class TestSQLiteBindFactory:
 
-    def setup(self):
+    def setup_method(self):
         self.tmp_file = NamedTemporaryFile()
         loader = load_from_dict(
             sqlite=dict(
