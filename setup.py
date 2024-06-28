@@ -3,7 +3,7 @@ from setuptools import find_packages, setup
 
 
 project = "microcosm-sqlite"
-version = "1.0.0"
+version = "2.0.0"
 
 setup(
     name=project,
